@@ -1,0 +1,22 @@
+body {
+	font-family: 'Lato', sans-serif;
+  margin: 0;
+  padding: 0;
+  
+}
+.Issues {
+  padding: 20px;
+  text-align: left;
+}
+
+.Issues *:focus {
+  outline: none;
+}
+
+.Issues-heading {
+	font-size: 20px;
+	margin: 0 0 50px;
+	text-align: center;
+}
+
+

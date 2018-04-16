@@ -1,0 +1,33 @@
+.ListItem {
+  border-top: 1px solid #e1e4e8;
+  display: flex;
+}
+.ListItem-icon {
+  padding: 10px 16px;  
+}
+.ListItem-icon__img {
+  width: 14px;
+}
+.ListItem-content {
+  padding: 8px 8px 8px 0;
+}
+.ListItem-content__link {
+  color: #24292e;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.ListItem-content__link:hover,
+.ListItem-content-data_author:hover {
+  color: #0366d6;
+}
+.ListItem-content-data {
+  color: #586069;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.ListItem-content-data_author {
+  color: #586069;
+  cursor: pointer;
+  text-decoration: none;
+}
