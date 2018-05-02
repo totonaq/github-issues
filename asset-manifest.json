@@ -1,10 +1,12 @@
 {
-  "main.css": "static/css/main.c5a2e890.css",
-  "main.css.map": "static/css/main.c5a2e890.css.map",
-  "main.js": "static/js/main.40065176.js",
-  "main.js.map": "static/js/main.40065176.js.map",
+  "main.css": "static/css/main.67847385.css",
+  "main.css.map": "static/css/main.67847385.css.map",
+  "main.js": "static/js/main.b493f8ee.js",
+  "main.js.map": "static/js/main.b493f8ee.js.map",
+  "static\\media\\exclamation-white.svg": "static/media/exclamation-white.8fe5d706.svg",
   "static\\media\\exclamation.svg": "static/media/exclamation.9831b307.svg",
   "static\\media\\loading.gif": "static/media/loading.bf45aef3.gif",
+  "static\\media\\not_found.png": "static/media/not_found.fc04aad2.png",
   "static\\media\\organization.svg": "static/media/organization.51f66de3.svg",
   "static\\media\\placeholder.svg": "static/media/placeholder.a585f805.svg",
   "static\\media\\search.svg": "static/media/search.be2b973f.svg"
