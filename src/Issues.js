@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import { handleResponse } from './helpers';
-import { API_URL } from './config';
 import SearchField from './components/searchField/SearchField';
 import Result from './components/result/Result';
-import Loading from './components/Loading';
+import NotFound from './components/notFound/NotFound';
+import Details from './components/details/Details';
+import { HashRouter, Switch, Route } from 'react-router-dom';
+import './Issues.css';
+import AuthorTooltip from './components/authorTooltip/AuthorTooltip';
+import { handleResponse } from './helpers';
+import { API_URL } from './config';
+import { withRouter } from 'react-router-dom';
 
 class Issues extends Component {
 
@@ -11,200 +16,284 @@ class Issues extends Component {
     super(props);
 
     this.state = {
-      value: '',
-      listOfRepos: [],
-      listOfIssues: null,
+      username: '',
+      repo: '',
       itemsPerPage: 30,
-      //set focus on the SearchButton by
-      //clicking 'Enter' on the ItemsPerPage field
-      currentPage: 1,
-      numberOfPages: 0,
-      showLoadingIcon: false
+
+      isTooltipVisible: false,
+      isTooltipBelow: false,
+      
+      left: 0,
+      top: 0,
+      bottom: 0,
+
+      userData: {},
+
+      isNotFound: false
+
     };
 
-    this.username = '';
+    this.setUsernameValue = this.setUsernameValue.bind(this);
+    this.setItemsPerPage = this.setItemsPerPage.bind(this);
+    this.setRepoValue = this.setRepoValue.bind(this);
 
-    this.onValueChange = this.onValueChange.bind(this);
-    this.onSearchButtonClick = this.onSearchButtonClick.bind(this);
-    this.onchangeItemsNumber = this.onchangeItemsNumber.bind(this);
-    this.onPageClick = this.onPageClick.bind(this);
+    this.setTooltipRelativePosition = this.setTooltipRelativePosition.bind(this);
+    this.fetchOnMouseOver = this.fetchOnMouseOver.bind(this);
+    this.getTooltipPosition = this.getTooltipPosition.bind(this);
+   
+    this.onTooltipMouseOut = this.onTooltipMouseOut.bind(this);
+    this.onTooltipMouseOver = this.onTooltipMouseOver.bind(this);
+
+    this.handleWrongParams = this.handleWrongParams.bind(this);
+   
+    this.yOffsetOfTooltipTarget = 0;
+
+    this.timeMouseOut = null;
+    this.timeMouseOver = null;
+
+    this.isMouseOver = false;
+
   }
 
-  onValueChange(value) {
-    this.setState({ value }, () => this.fetchAutocompleteData());
+  handleWrongParams() {
+    this.setState({ isNotFound: true });
   }
 
-  fetchAutocompleteData() {
-    let indexOfSlash = this.state.value.indexOf('/');
+  setUsernameValue(username) {
+    this.setState({ 
+      username,
+      isNotFound: false 
+    });
+  }
 
-    if (indexOfSlash !== -1) {
+  setRepoValue(repo) {
+    this.setState({ 
+      repo,
+      isNotFound: false 
+    });
+  }
+
+  setItemsPerPage(itemsPerPage) {
+    this.setState({ itemsPerPage });
+  }
+
+  setTooltipRelativePosition(height) {
+
+    let isTooltipBelow = height >= 
+      this.yOffsetOfTooltipTarget ? true : false;
+
+    this.setState({ isTooltipBelow });
+  }
+
+  getTooltipPosition(e) {
+
+    let coords = e.target.getBoundingClientRect();
+
+    let tooltipTriangleHeight = 8; // half width has the same value
+
+    let tooltipTriangleOffsetLeft = 26;
+
+    let top, bottom, left;
+
+    this.yOffsetOfTooltipTarget = coords.top;
+
+    top = coords.top + coords.height + window.pageYOffset + 
+      tooltipTriangleHeight + 'px';
+
+    bottom = document.documentElement.clientHeight - 
+      coords.top - window.pageYOffset + 
+      tooltipTriangleHeight + 'px';
+
+    left = document.documentElement.clientWidth >= 768 ? 
+      coords.width/2 + coords.left - tooltipTriangleHeight - 
+      tooltipTriangleOffsetLeft + 'px' :
+      20 + 'px';
+
+    this.setState({
+      left,
+      top,
+      bottom
+    });
+  }
+
+  fetchOnMouseOver(e) {
+
+    this.isMouseOver = true;
+
+    this.getTooltipPosition(e);
+    
+    let target = e.target;
+
+    fetch(`${API_URL}/users/${target.dataset.user}`)
+    .then(handleResponse)
+    .then(response => {
       
-      let username = this.state.value.substring(0, indexOfSlash);
-      
-      if (this.username !== username) {
-        this.username = username;
-        
-        fetch(`${API_URL}/users/${this.username}/repos`)
-        .then(handleResponse)
-        .then(response => {
-
-          if (response.length > 0) {
-            this.setState({ listOfRepos: response });
-          }
-
-        })
-        .catch(error => {
-          console.log('response failed', error);
-        });
-
-      }
-
-    } else {
-      this.username = '';
       this.setState({
-        listOfRepos: []
+        userData: response
+      }, () => {
+
+        // this condition will prevent showing a tooltip if
+        // data fetching has completed after a mouse leaves
+        // the target element
+
+        if (this.isMouseOver) this.onTooltipMouseOver();
+        
       });
-    }
-  }
-
-  onSearchButtonClick(e) {
-    e.preventDefault();
-
-    if (this.state.value === '') {
-      return;
-    }
-
-    this.setState({ showLoadingIcon: true });
-
-    this.getNumberOfIssues();
+      
+    })
+    .catch(error => {
+      console.log('request failed', error);
+    });
     
   }
 
-  getNumberOfIssues() {
+  onTooltipMouseOver(e) {
+   
+    clearTimeout(this.timeMouseOut);
 
-    fetch(`${API_URL}/repos/${this.state.value}`)
-    .then(handleResponse)
-    .then(response => {
-
-      let numberOfIssues = response.open_issues_count;
-      let itemsPerPage = this.state.itemsPerPage;
-
-      if (itemsPerPage === 0) {
-        itemsPerPage = 30;
-      }
-      
+    this.timeMouseOver = setTimeout(() => {
       this.setState({
-        itemsPerPage,
-        currentPage: 1,
-        numberOfPages: Math.ceil(numberOfIssues / itemsPerPage)
-      }, () => {
-        return this.fetchIssuesData(numberOfIssues);
+        isTooltipVisible: true 
       });
-      
-    })
-    .catch(error => {
-
-      this.setState({
-        showLoadingIcon: false,
-        listOfIssues: 'Not Found'
-      });
-
-      console.log('request failed', error);
-
-    });
+    }, 50);
+    
   }
 
-  fetchIssuesData (numberOfIssues) {
+  onTooltipMouseOut() {
 
-    let {value, currentPage, itemsPerPage} = this.state;
-
-    fetch(`${API_URL}/repos/${value}/issues?page=${currentPage}&per_page=${itemsPerPage}`)
-    .then(handleResponse)
-    .then(response => {
-
-      this.setState({
-        listOfIssues: response,
-        showLoadingIcon: false
-      });
-
-    })
-    .catch(error => {
-
-      this.setState({
-        showLoadingIcon: false,
-      });
-      console.log('request failed', error);
-
-    });
-
-  }
-
-  onchangeItemsNumber(e) {
+    this.isMouseOver = false;
   
-    let value = Math.min(e.target.value, 100);
-    this.setState({ itemsPerPage: value });
+    clearTimeout(this.timeMouseOver);
 
-  }
-
-  onPageClick(e, btn) {
-
-    e.preventDefault();
-
-    let num;
-
-    if (btn === 'numeric') {
-      num = e.target.getAttribute('href') - this.state.currentPage;
-    } else if (btn === 'prev') {
-      num = -1;
-    } else if (btn === 'next') {
-      num = 1;
-    }
-
-    this.setState( prevState => {
-      return {
-        showLoadingIcon: true,
-        currentPage: +prevState.currentPage + num
-      };
-    }, () => {
-      this.fetchIssuesData();
-    });
-
+    this.timeMouseOut = setTimeout(() => {
+      this.setState({
+        isTooltipVisible: false,
+        userData: {}
+      });
+    }, 50);
+  
   }
 
   render() {
-   
+    
+    const search = <div className="Issues-search">
+                    <h1 className="Issues-search-heading">Поиск GitHub issues в заданном репозитории</h1>
+                    <SearchField
+                      setUsernameValue={this.setUsernameValue}
+                      setRepoValue={this.setRepoValue}
+                      setItemsPerPage={this.setItemsPerPage}
+                      username={this.state.username}
+                      repo={this.state.repo}
+                      itemsPerPage={this.state.itemsPerPage}
+                    />
+                  </div>
+
+    const result =  <Result 
+                      setUsernameValue={this.setUsernameValue}
+                      setRepoValue={this.setRepoValue}
+                      setItemsPerPage={this.setItemsPerPage}
+                      onmouseover={this.fetchOnMouseOver}
+                      onmouseout={this.onTooltipMouseOut}
+                      handleWrongParams={this.handleWrongParams}
+                    />
+
     return (
 
-      <div className="Issues">
-        <h1 className="Issues-heading">Поиск GitHub issues в заданном репозитории</h1>
-        <SearchField
-          value={this.state.value}
-          repos={this.state.listOfRepos}
-          itemsPerPage={this.state.itemsPerPage}
+      <HashRouter>
+        
+        <div className='Issues'>
 
-          onSearchButtonClick={this.onSearchButtonClick}
-          onValueChange={this.onValueChange}
-          onchangeItemsNumber={this.onchangeItemsNumber}
-          onItemsPerPageKeyDown={this.onItemsPerPageKeyDown}
-        />
+          <Switch>
+            <Route
+              
+              exact
+              path='/'
+              render={(props) => {
+                return (
+                  <div className='Issues-wrap'>
+                    {search}
+                  </div>
+                )
+              }}
 
-        {this.state.showLoadingIcon ? 
+            />
+            <Route
+              
+              exact
+              path='/repos/:name/:repo/issues'
+              render={(props) => {
 
-          <Loading /> :
-         
-          <Result
-            listOfIssues={this.state.listOfIssues}
-            currentPage={this.state.currentPage}
-            numberOfPages={this.state.numberOfPages}
-            onPageClick={this.onPageClick}
-          />
-           
-        }
+                // in case of wrong params (name or repo) 
+                if (this.state.isNotFound) {
+                  return <NotFound />
+                }
 
-      </div>
+                return (
+
+                  <div className='Issues-wrap'>
+
+                    {search}
+                    {result}
+                  
+                  </div>
+                )
+              }}
+              
+            />
+
+            <Route
+              
+              exact
+              path='/repos/:name/:repo/issues/:number'
+              render={(props) => {
+
+                if (this.state.isNotFound) {
+                  return <NotFound />
+                }
+
+                return (
+                  <Details 
+                    onmouseover={this.fetchOnMouseOver}
+                    onmouseout={this.onTooltipMouseOut}
+                  />
+                )
+              }}
+              
+            />
+
+            <Route
+              path='*'
+              render={(props) => {
+                return (
+                  <NotFound />
+                )
+              }}
+
+            />
+          </Switch>
+          {this.state.isTooltipVisible && 
+            <AuthorTooltip
+              setTooltipRelativePosition={this.setTooltipRelativePosition}
+
+              data={this.state.userData}
+            
+              left={this.state.left}
+              top={this.state.top}
+              bottom={this.state.bottom}
+
+              isBelow={this.state.isTooltipBelow}
+              onmouseover={this.onTooltipMouseOver}
+              onmouseout={this.onTooltipMouseOut}
+              
+            /> 
+          }
+
+        </div>
+
+      </HashRouter>
 
     );
   }
 }
 
-export default Issues;
+export default withRouter(Issues);

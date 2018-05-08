@@ -1,0 +1,54 @@
+.Pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.Pagination .Page {
+  background-color: #fff;
+  border: 1px solid #e1e4e8;
+  color: #0366d6;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  margin-left: -1px;
+  padding: 7px 12px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  width: 40px;
+}
+
+.Pagination .Page:hover {
+  background-color: #eff3f6;
+  border-color: #e1e4e8;
+}
+.Pagination .Page.current {
+  background-color: #0366d6;
+  border-color: #0366d6;
+  color: #fff;
+}
+
+.Pagination .Page.NextPage {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  width: auto;
+}
+.Pagination .Page.PrevPage {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  width: auto;
+}
+
+.Pagination .Page.NextPage[disabled],
+.Pagination .Page.PrevPage[disabled] {
+  color: #d1d5da;
+  cursor: default;
+  background-color: #fafbfc;
+}
+
+.Pagination-count-of-pages {
+  font-family: inherit;
+  font-size: 14px;
+  margin: 15px 0;
+  padding: 0;
+}

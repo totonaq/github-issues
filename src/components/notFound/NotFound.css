@@ -1,0 +1,47 @@
+.NotFound {
+	background-color: #f8f8f8;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+}
+
+.NotFound-img {
+
+	width: 200px;
+}
+
+.NotFound-404 {
+	color: #85868a;
+	font-size: 115px;
+	margin: 20px 0;
+	padding: 0;
+}
+
+.NotFound-text {
+	color: #bfc1c1;
+	font-size: 30px;
+	margin: 0;
+}
+
+
+
+
+.NotFound-link {
+	color: #6373ce;
+	font-size: 17px;
+	margin-top: 40px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.NotFound-link:before {
+	content: '←';
+	margin-right: 5px;
+}
+
+.NotFound-link:hover {
+	text-decoration: underline;
+}

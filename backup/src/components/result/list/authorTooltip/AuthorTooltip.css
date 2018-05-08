@@ -1,0 +1,138 @@
+.AuthorTooltip {
+  align-items: flex-start;
+  background-color: #fff;
+  border: 1px solid #d1d5da;
+  border-radius: 3px;
+  box-shadow: 0 1px 15px rgba(27,31,35,0.15);
+  display: flex;
+  flex-flow: row wrap;
+  left: 0;
+  padding: 15px 15px 20px;
+  min-height: 60px;
+  position: absolute;
+  width: 245px;
+  z-index: 5;
+}
+
+.AuthorTooltip.tooltip-above:before,
+.AuthorTooltip.tooltip-above:after,
+.AuthorTooltip.tooltip-below:before,
+.AuthorTooltip.tooltip-below:after {
+  content: '';
+  height: 0;
+  position: absolute;
+  width: 0;
+}
+.AuthorTooltip.tooltip-above:before,
+.AuthorTooltip.tooltip-above:after {
+  top: 100%;
+}
+.AuthorTooltip.tooltip-above:before,
+.AuthorTooltip.tooltip-below:before {
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  left: 25px;
+}
+
+.AuthorTooltip.tooltip-above:after,
+.AuthorTooltip.tooltip-below:after {
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  left: 26px;
+}
+.AuthorTooltip.tooltip-above:before {
+  border-top: 8px solid #d1d5da;
+}
+.AuthorTooltip.tooltip-above:after {
+  border-top: 7px solid #fff;
+}
+.AuthorTooltip.tooltip-below:before,
+.AuthorTooltip.tooltip-below:after {
+  content: '';
+  height: 0;
+  position: absolute;
+  width: 0;
+}
+.AuthorTooltip.tooltip-below:before {
+  border-bottom: 8px solid #d1d5da;
+  top: -8px;
+}
+.AuthorTooltip.tooltip-below:after {
+  border-bottom: 7px solid #fff;
+  top: -7px;
+}
+
+.AuthorTooltip-descr {
+  margin-left: 15px;
+  width: 65%;
+}
+
+.AuthorTooltip__img {
+  border-radius: 3px;
+  height: auto;
+  width: 60px;
+}
+
+.AuthorTooltip-descr-links__link_login,
+.AuthorTooltip-descr-links__link_username {
+  color: #24292e;
+  display: inline-block;
+  font-size: 14px;
+  text-decoration: none;
+}
+.AuthorTooltip-descr-links__link_login {
+  font-weight: bold;
+  margin-right: 10px;
+}
+.AuthorTooltip-descr-links__link_login:hover,
+.AuthorTooltip-descr-links__link_username:hover {
+  color: #0366d6;
+}
+
+.AuthorTooltip-descr-location {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.AuthorTooltip-descr-location__placeholder,
+.AuthorTooltip-company__icon {
+  margin-right: 5px;
+  width: 15px;
+}
+
+.AuthorTooltip-descr-bio {
+  font-size: 14px;
+  margin: 10px 0 0;
+}
+
+.AuthorTooltip-company {
+  align-items: center;
+  border-top: 1px solid #e1e4e8;
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: -5px;
+  padding-top: 15px;
+  width: 100%;
+}
+.AuthorTooltip-company-title {
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+}
+.AuthorTooltip-company-title__link {
+  color: #24292e;
+  text-decoration: none;
+}
+.AuthorTooltip-company-title__link:hover {
+  color: #0366d6;
+}
+
+@media all and (min-width: 768px) {
+  .AuthorTooltip {
+    width: 325px;
+  }
+  .AuthorTooltip-descr {
+    width: 76%;
+  }
+}

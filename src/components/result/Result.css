@@ -1,7 +1,3 @@
-.Result .list-wrap {
-  margin: auto;
-  max-width: 980px;
-}
-.Result .NotFound {
+.NoIssues {
   font-size: 14px;
 }

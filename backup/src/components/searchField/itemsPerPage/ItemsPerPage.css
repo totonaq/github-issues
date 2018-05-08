@@ -1,0 +1,26 @@
+.ItemsPerPage {
+  margin-top: 20px;
+}
+.ItemsPerPage .ItemsPerPage__input {
+	background-color: #fafbfc;
+	border: 1px solid #d1d5da;
+  border-radius: 3px;
+  color: #586069;
+  margin-left: 20px;
+  padding-bottom: 7px;
+  padding-top: 7px;
+  text-align: center;
+  width: 40px;
+  z-index: 1;
+}
+.ItemsPerPage .ItemsPerPage__label {
+  color: #24292e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media all and (min-width: 480px) {
+  .ItemsPerPage .ItemsPerPage__label {
+    font-size: 14px;
+  }
+}

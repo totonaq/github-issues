@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import search from './search.svg';
-import UserInputField from './../inputFields/UserInputField';
-import RepoInputField from './../inputFields/RepoInputField';
-import Autocomplete from './../autocomplete/Autocomplete';
-import SearchButton from './../searchButton/SearchButton';
-import ItemsPerPage from './../itemsPerPage/ItemsPerPage';
+import UserInputField from './inputFields/UserInputField';
+import RepoInputField from './inputFields/RepoInputField';
+import Autocomplete from './autocomplete/Autocomplete';
+import SearchButton from './searchButton/SearchButton';
+import ItemsPerPage from './itemsPerPage/ItemsPerPage';
 import PropTypes from 'prop-types';
 import { API_URL } from './../../config';
 import { handleResponse } from './../../helpers';
@@ -34,50 +34,59 @@ class SearchField extends Component {
 		this.onInputFocus = this.onInputFocus.bind(this);
 		this.onInputBlur = this.onInputBlur.bind(this);
 		
-		this.time = null;
+		this.time = null
+	}
+
+	// componentDidMount() {
+	// 	let { username } = this.props;
+
+		
+	// 	this.getListOfRepos(username);
+		
+
+	  
+	// }
+
+	componentWillReceiveProps(nextProp) {
+		if (this.props.username !== nextProp.username || 
+			this.props.repo !== nextProp.repo) {
+
+			let { username } = nextProp;
+
+			this.setState({ listOfRepos: [] });
+
+			// no fetching issues unless 300ms have passed
+			// since the last symbol of the repo input was typed
+
+			clearTimeout(this.time)
+
+	    this.time = setTimeout(() => this.getListOfRepos(username), 300);
+
+
+	    
+		}
 	}
 
   onValueChange(e) {
 		let value = e.target.value;
 
 		if (e.target.name === 'username') {
-
-			this.fetchData();
 			this.props.setUsernameValue(value);
 			this.props.setRepoValue('');
 			this.hideAutocomplete();
-
 		} else if (e.target.name === 'repo') {
-
-			if (this.state.listOfRepos.length === 0) {
-				this.fetchData();
-			}
-			
 			this.props.setRepoValue(value);
 			this.showAutocomplete();
-
 		}
 
-  }
-
-  fetchData() {
-  	
-  	this.setState({ listOfRepos: [] });
-
-		// no fetching issues unless 500ms have passed
-		// since the last symbol of the repo input was typed
-
-		clearTimeout(this.time);
-
-    this.time = setTimeout(() => this.getListOfRepos(this.props.username), 500);
   }
 
   getListOfRepos(username) {
 
   	if (!username) {
   		this.setState({ listOfRepos: [] });
-  		return;
-  	}
+  		return
+  	};
         
     fetch(`${API_URL}/users/${username}/repos`)
     .then(handleResponse)
@@ -90,16 +99,14 @@ class SearchField extends Component {
     })
     .catch(error => {
       console.log('response failed', error);
-      this.setState({ listOfRepos: [] });
+      //this.setState({ listOfRepos: [] });
     });
 
   }
 
   onchangeItemsNumber(e) {
   	let itemsPerPage = Math.min(e.target.value, 100);
-
-		this.props.setItemsPerPage(itemsPerPage);	
-		
+  	this.props.setItemsPerPage(itemsPerPage);
   }
 
   showAutocomplete() {
@@ -136,10 +143,11 @@ class SearchField extends Component {
 		    case "Enter":
 		    	
 		    	if (this.state.activeHint > -1) {
-		    		e.preventDefault();
+		    		e.preventDefault()
 		    		this.chooseRepo(this.state.activeHint);
 		    		this.setState({ activeHint: -1 });
 		    		this.onInputBlur();
+		    		this.hideAutocomplete();
 		    	}
 		    	break;
 
@@ -168,7 +176,7 @@ class SearchField extends Component {
 		this.props.setRepoValue(repo);
 
 		this.props.history.push(`/repos/${this.props.username}/${repo}/issues?page=1&per_page=${this.props.itemsPerPage}`);
-		this.hideAutocomplete();
+
 	}
 
 	onSearchButtonClick(e) {
@@ -194,6 +202,8 @@ class SearchField extends Component {
 	}
 
 	render() {
+
+		//console.log(this.state.listOfRepos)
 		
 		return (
 			<form className='SearchField'>
@@ -253,15 +263,6 @@ class SearchField extends Component {
 			</form>
 		)
 	}
-}
-
-SearchField.defaultProps = {
-	username: '',
-	repo: '',
-	itemsPerPage: 30,
-	setItemsPerPage: () => {},
-	setUsernameValue: () => {},
-	setRepoValue: () => {}
 }
 
 SearchField.propTypes = {
