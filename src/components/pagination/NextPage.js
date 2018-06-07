@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { parse } from 'qs';
 import { validatePageNumber, validateItemsPerPage } from './../../helpers';
 
@@ -13,20 +13,22 @@ const NextPage = ({ match, history, location, numberOfPages }) => {
 	page = validatePageNumber(page);
 	per_page = validateItemsPerPage(per_page);
 
-	const getNextPage = () => {
-		history.push(`/repos/${name}/${repo}/issues?page=${++page}&per_page=${per_page}`);
-	};
-
-	return(
-		<button
-			className='Page NextPage'
-			onClick={getNextPage}
-			disabled={page === numberOfPages}
-		>
-			Next
-		</button>
-	)
-	
+	if ( page === numberOfPages ) {
+		return(
+			<span className='Page PrevPage disabled'>
+				Next
+			</span>
+		)
+	} else {
+		return(
+			<Link
+				className='Page PrevPage'
+				to={`/repos/${name}/${repo}/issues?page=${++page}&per_page=${per_page}`}
+				>
+				Next
+			</Link>
+		)
+	}
 }
 
 NextPage.defaultProps = {

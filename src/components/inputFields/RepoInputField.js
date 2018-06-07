@@ -4,19 +4,26 @@ import PropTypes from 'prop-types';
 
 const RepoInputField = (props) => {
 
+	const { value, 
+					reposLength, 
+					onValueChange, 
+					onRepoInputKeydown, 
+					setAutocompleteVisibility, 
+					setInputFocus } = props;
+
 	return(
 		<input
 			name='repo'
 			className='InputField'
 			type='text'
-			value={props.value}
+			value={value}
 			autoComplete='off'
-			disabled={(!props.listOfRepos.length > 0 && !props.value)}
+			disabled={(!reposLength > 0 && !value)}
 			placeholder='репозиторий'
-			onChange={props.onchange}
-			onKeyDown={props.onkeydown}
-			onFocus={() => {props.showAutocomplete(); props.onInputFocus()}}
-			onBlur={() => { props.onInputBlur()}}
+			onChange={onValueChange}
+			onKeyDown={onRepoInputKeydown}
+			onFocus={() => { setAutocompleteVisibility(true); setInputFocus(true) }}
+			onBlur={() => { setInputFocus(false) }}
 			
 		/>
 	)
@@ -24,22 +31,20 @@ const RepoInputField = (props) => {
 
 RepoInputField.defaultProps = {
 	value: '',
-	listOfRepos: [],
-	onchange: () => {},
-	onkeydown: () => {},
-	onInputFocus: () => {},
-	onInputBlur: () => {},
-	showAutocomplete: () => {},
+	reposLength: 0,
+	onValueChange: () => {},
+	onRepoInputKeydown: () => {},
+	setInputFocus: () => {},
+	setAutocompleteVisibility: () => {}
 }
 
 RepoInputField.propTypes = {
 	value: PropTypes.string.isRequired,
-	onchange: PropTypes.func.isRequired,
-	onkeydown: PropTypes.func.isRequired,
-	listOfRepos: PropTypes.array.isRequired,
-	showAutocomplete: PropTypes.func.isRequired,
-	onInputFocus: PropTypes.func.isRequired,
-	onInputBlur: PropTypes.func.isRequired,
+	reposLength: PropTypes.number.isRequired,
+	onValueChange: PropTypes.func.isRequired,
+	onRepoInputKeydown: PropTypes.func.isRequired,
+	setInputFocus: PropTypes.func.isRequired,
+	setAutocompleteVisibility: PropTypes.func.isRequired
 }
 
 export default RepoInputField

@@ -2,18 +2,16 @@ import React from 'react';
 import exclamation from './exclamation.svg';
 import './ListItem.css';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 const ListItem = (props) => {
 
-	const { user: {login}, title, number, created_at } = props.data;
+	const { fetchOnMouseOver, onTooltipMouseOut, data } = props;
 
-	const onclick = (e) => {
-		const { name, repo } = props.match.params;
-		e.preventDefault();
-		props.history.push(`/repos/${name}/${repo}/issues/${number}`);
-	}
-		
+	const { user: {login}, title, number, created_at } = data;
+
+	const { name, repo } = props.match.params;
+
 	return(
 		
 		<li className='ListItem'>
@@ -26,12 +24,12 @@ const ListItem = (props) => {
 			</div>
 
 			<div className='ListItem-content'>
-				<a href=''
+				<Link
 					className='ListItem-content__link'
-					onClick={onclick}
+					to={`/repos/${name}/${repo}/issues/${number}`}
 				>
 					{title}
-				</a>
+				</Link>
 				
 
 				<div className='ListItem-content-data'>
@@ -44,8 +42,8 @@ const ListItem = (props) => {
 					<span
 						data-user={login}
 						className='ListItem-content-data_author'
-						onMouseOver={props.onmouseover}
-						onMouseOut={props.onmouseout}
+						onMouseOver={fetchOnMouseOver}
+						onMouseOut={onTooltipMouseOut}
 					>
 						{login}
 					</span>
@@ -62,14 +60,14 @@ const ListItem = (props) => {
 
 ListItem.defaultProps = {
 	data: { user: ''},
-	onmouseover: () => {},
-	onmouseout: () => {},
+	fetchOnMouseOver: () => {},
+	onTooltipMouseOut: () => {},
 }
 
 ListItem.propTypes = {
 	data: PropTypes.object.isRequired,
-	onmouseout: PropTypes.func.isRequired,
-	onmouseover: PropTypes.func.isRequired
+	fetchOnMouseOver: PropTypes.func.isRequired,
+	onTooltipMouseOut: PropTypes.func.isRequired
 }
 
 export default withRouter(ListItem)

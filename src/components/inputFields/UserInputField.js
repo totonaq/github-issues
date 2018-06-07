@@ -2,7 +2,22 @@ import React from 'react';
 import './InputField.css';
 import PropTypes from 'prop-types';
 
-const UserInputField = ({ value, onchange, onInputFocus, onInputBlur, hideAutocomplete }) => {
+const UserInputField = (props) => {
+
+	const { 
+		value, 
+		onValueChange, 
+		setInputFocus, 
+		setAutocompleteVisibility } = props;
+
+	const onfocus = () => {
+		setInputFocus(true); 
+		setAutocompleteVisibility(false)
+	}
+
+	const onblur = () => {
+		setInputFocus(false)
+	}
 
 	return(
 		<input
@@ -12,9 +27,9 @@ const UserInputField = ({ value, onchange, onInputFocus, onInputBlur, hideAutoco
 			value={value}
 			placeholder='имя'
 			autoComplete='off'
-			onChange={onchange}
-			onFocus={() => {onInputFocus(); hideAutocomplete()}}
-			onBlur={onInputBlur}
+			onChange={onValueChange}
+			onFocus={onfocus}
+			onBlur={onblur}
 			
 		/>
 	)
@@ -22,18 +37,16 @@ const UserInputField = ({ value, onchange, onInputFocus, onInputBlur, hideAutoco
 
 UserInputField.defaultProps = {
 	value: '',
-	onchange: () => {},
-	onInputFocus: () => {},
-	onInputBlur: () => {},
-	hideAutocomplete: () => {},
+	onValueChange: () => {},
+	setInputFocus: () => {},
+	setAutocompleteVisibility: () => {},
 }
 
 UserInputField.propTypes = {
 	value: PropTypes.string.isRequired,
-	onchange: PropTypes.func.isRequired,
-	onInputFocus: PropTypes.func.isRequired,
-	onInputBlur: PropTypes.func.isRequired,
-	hideAutocomplete: PropTypes.func.isRequired,
+	onValueChange: PropTypes.func.isRequired,
+	setInputFocus: PropTypes.func.isRequired,
+	setAutocompleteVisibility: PropTypes.func.isRequired,
 	
 }
 

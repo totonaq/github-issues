@@ -13,6 +13,8 @@ body {
 }
 
 .Issues-wrap {
+	margin: auto;
+	max-width: 980px;
 	padding: 20px;
 }
 

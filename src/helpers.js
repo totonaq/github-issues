@@ -49,30 +49,18 @@ export const validateItemsPerPage = (items) => {
 	return items;
 };
 
-/**
- * Fetch user data by mouseover
- *
- */
 
-//  export const fetchOnMouseOver = (e) => {
 
-// 	this.props.getTooltipPosition(this.getTooltipPosition(e));
 
-// 	fetch(`${API_URL}/users/${this.props.user}`)
-// 	.then(handleResponse)
-//   .then(response => {
-  	
-//   	this.props.getUserData({
-//   		userName: response.name,
-//   		location: response.location,
-//   		bio: response.bio,
-//   		company: response.company
-//   	});
+export const filterRepos = (repo, listOfRepos) => {
 	
-//   })
-//   .catch(error => {
-//     console.log('request failed', error);
-//   });
+	const val = repo;
 
-// 	this.props.onmouseover(e.target);
-// }
+	return listOfRepos.filter(repo => {
+
+		return val.toUpperCase() ===
+			repo.name.slice(0, val.length).toUpperCase();
+
+	});
+
+}

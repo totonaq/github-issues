@@ -10,20 +10,22 @@
   width: 247px;
 }
 .Autocomplete-list__item {
-  border: 1px solid #d1d5da;
   box-sizing: border-box;
-  color: #586069;
-  cursor: pointer;
   font-size: 14px;
   margin-top: -1px;
-  padding: 7px 0 7px 30px;
-  
   z-index: 1;
 }
-.Autocomplete-list__item:hover {
+.Autocomplete-list__item a {
+  border: 1px solid #d1d5da;
+  color: #586069;
+  display: block;
+  padding: 7px 0 7px 30px;
+  text-decoration: none;
+}
+.Autocomplete-list__item a:hover {
   background-color: #edeef3;
 }
-.Autocomplete-list__item.active {
+.Autocomplete-list__item.active a {
   background-color: #1e90ff;
   color: #fff;
 }

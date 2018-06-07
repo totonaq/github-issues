@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Issues from './Issues';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 
 const App = () => {
 	return (
-		<BrowserRouter>
+		<HashRouter>
        <Issues />   
-    </BrowserRouter>
+    </HashRouter>
 		
 	)
 }

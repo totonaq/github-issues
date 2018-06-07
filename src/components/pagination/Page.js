@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { parse } from 'qs';
 import { validatePageNumber, validateItemsPerPage } from './../../helpers';
 
@@ -13,11 +13,11 @@ const Page = ({ value, match, history, location }) => {
 	per_page = validateItemsPerPage(per_page);
 
 	return(
-		<button
+		<Link
 			className={value === page ? 'Page current' : 'Page'}
-			onClick={() => history.push(`/repos/${name}/${repo}/issues?page=${value}&per_page=${per_page}`)}>
+			to={`/repos/${name}/${repo}/issues?page=${value}&per_page=${per_page}`}>
 			{value}
-		</button>
+		</Link>
 	)
 }
 

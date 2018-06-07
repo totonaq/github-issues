@@ -3,9 +3,16 @@ import PropTypes from 'prop-types';
 
 const Comment = (props) => {
 
-	const { body_html, created_at, user: { login, html_url, avatar_url } } = props.data;
+	const { onmouseover, onmouseout, data } = props;
 
-	const { onmouseover, onmouseout } = props;
+	const { 
+		body_html, 
+		created_at, 
+		user: { 
+			login, 
+			html_url, 
+			avatar_url } 
+		} = data;
 
 	return (
 

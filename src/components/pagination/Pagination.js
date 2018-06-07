@@ -7,49 +7,37 @@ import PropTypes from 'prop-types';
 
 class Pagination extends Component {
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			windowWidth: 0
-		};
-
-		this.getWindowWidth = this.getWindowWidth.bind(this);
-
-	}
-
 	componentDidMount() {
-    this.getWindowWidth();
-    window.addEventListener('resize', this.getWindowWidth);
+    this.props.getWindowWidth();
+    window.addEventListener('resize', this.props.getWindowWidth);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.getWindowWidth);
-  }
-
-  getWindowWidth() {
-    this.setState({ windowWidth: document.documentElement.clientWidth });
+    window.removeEventListener('resize', this.props.getWindowWidth);
   }
 
 	render() {
-		let pages = [];
+
+		const { windowWidth, currentPage, numberOfPages } = this.props
+
+		const pages = [];
 
 		let start, limit;
 
-		if (this.state.windowWidth <= 570) {
+		if (windowWidth <= 570) {
 			
 			// maximum three pages 
 
-			start = Math.max(1, this.props.currentPage - 1);
-			limit = Math.min(start + 2, this.props.numberOfPages);
+			start = Math.max(1, currentPage - 1);
+			limit = Math.min(start + 2, numberOfPages);
 
 		} else {
 
 			// maximum ten pages with the active page in the middle
 
-			start = Math.min(Math.max(this.props.currentPage - 5, 1), 
-	      Math.max(this.props.numberOfPages - 9, 1));
-	    limit = Math.min(start + 9, this.props.numberOfPages);
+			start = Math.min(Math.max(currentPage - 5, 1), 
+	      Math.max(numberOfPages - 9, 1));
+	    limit = Math.min(start + 9, numberOfPages);
 
 		}
    
@@ -71,13 +59,13 @@ class Pagination extends Component {
 
 	          {pages}
 
-	          <NextPage numberOfPages={this.props.numberOfPages} />
+	          <NextPage numberOfPages={numberOfPages} />
 
 	       	</div>
 	      }
 
 	      <p className='Pagination-count-of-pages'>
-       		Страница {this.props.currentPage} из {this.props.numberOfPages}
+       		Страница {currentPage} из {numberOfPages}
        	</p>
 	    </div>
 		)
@@ -86,12 +74,16 @@ class Pagination extends Component {
 
 Pagination.defaultProps = {
 	currentPage: 1,
-	numberOfPages: 1
+	numberOfPages: 1,
+	windowWidth: 0,
+	getWindowWidth: () => {}
 }
 
 Pagination.propTypes = {
 	currentPage: PropTypes.number.isRequired,
 	numberOfPages: PropTypes.number.isRequired,
+	windowWidth: PropTypes.number.isRequired,
+	getWindowWidth: PropTypes.func.isRequired,
 }
 
 export default Pagination

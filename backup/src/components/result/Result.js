@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import List from './list/List';
-import Pagination from './pagination/Pagination';
-import NoIssues from './noIssues/NoIssues';
-import Loading from './../Loading';
+import List from './../list/List';
+import Pagination from './../pagination/Pagination';
+import NoIssues from './../noIssues/NoIssues';
+import Loading from './../loading/Loading';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { API_URL } from './../../config';
@@ -35,6 +35,7 @@ class Result extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+
     if (this.props.location.pathname !== nextProps.location.pathname || 
     	this.props.location.search !== nextProps.location.search
     	) {
@@ -62,7 +63,7 @@ class Result extends Component {
     .then(handleResponse)
     .then(response => {
 
-      let numberOfIssues = response.open_issues_count;
+      const numberOfIssues = response.open_issues_count;
 
       this.setState({
         numberOfPages: Math.ceil(numberOfIssues / per_page)
@@ -75,8 +76,13 @@ class Result extends Component {
 
       this.setState({
         showLoadingIcon: false,
-        listOfIssues: 'Not Found'
+        listOfIssues: []
       });
+
+      this.props.setUsernameValue('');
+	    this.props.setRepoValue('');
+
+      this.props.handleWrongParams();
 
       console.log('request failed', error);
 
@@ -96,7 +102,7 @@ class Result extends Component {
 
     })
     .catch(error => {
-
+    	this.props.handleWrongParams();
       this.setState({
         showLoadingIcon: false,
       });
@@ -112,32 +118,25 @@ class Result extends Component {
 
 		page = validatePageNumber(page);
 
-		let messages = [
-			'В данном репозитории не найдено issues',
-			'По вашему запросу ничего не найдено. Проверьте правильность введенных данных.'
-		];
-
 		if (this.state.showLoadingIcon) {
 
 			return <Loading />
 			
 		} else if (this.state.listOfIssues.length === 0) {
-			// if no issues are found in a particular repo
+			
 			return (
-				<NoIssues className='NoIssues' message={messages[0]} />
-			)
-
-		} else if (this.state.listOfIssues === 'Not Found') {
-			// if a wrong request is done
-			return (
-				<NoIssues className='NoIssues' message={messages[1]} />
+				<NoIssues />
 			)
 
 		} else {
 
 			return (
 				<div className='Result'>
-					<List listOfIssues={this.state.listOfIssues} />
+					<List
+						listOfIssues={this.state.listOfIssues}
+						onmouseover={this.props.onmouseover}
+						onmouseout={this.props.onmouseout}
+					/>
 
 					<Pagination 
 						currentPage={page}
@@ -151,10 +150,22 @@ class Result extends Component {
 	
 }
 
+Result.defaultProps = {
+	onmouseover: () => {},
+	onmouseout: () => {},
+	setUsernameValue: () => {},
+  setRepoValue: () => {},
+  setItemsPerPage: () => {},
+  handleWrongParams: () => {}
+}
+
 Result.propTypes = {
+	onmouseover: PropTypes.func.isRequired,
+	onmouseout: PropTypes.func.isRequired,
 	setUsernameValue: PropTypes.func.isRequired,
   setRepoValue: PropTypes.func.isRequired,
-  setItemsPerPage: PropTypes.func.isRequired
+  setItemsPerPage: PropTypes.func.isRequired,
+  handleWrongParams: PropTypes.func.isRequired,
 }
 
 export default withRouter(Result)

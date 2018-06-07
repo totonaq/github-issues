@@ -2,7 +2,7 @@ import React from 'react';
 import './ItemsPerPage.css';
 import PropTypes from 'prop-types';
 
-const ItemsPerPage = ({ number, onchange }) => {
+const ItemsPerPage = ({ number, onchangeItemsNumber }) => {
 
 	const onItemsPerPageKeyDown = (e) => {
     let fromCodePoint;
@@ -26,6 +26,7 @@ const ItemsPerPage = ({ number, onchange }) => {
   };
 
 	return(
+		
 		<div className='ItemsPerPage'>
 			<label className='ItemsPerPage__label' htmlFor='number'>Количество объектов на странице</label>
 			<input
@@ -34,7 +35,7 @@ const ItemsPerPage = ({ number, onchange }) => {
 				type='text'
 				name='perPage'
 				value={number}
-				onChange={onchange}
+				onChange={onchangeItemsNumber}
 				onKeyDown={onItemsPerPageKeyDown}
 			/>
 		</div>
@@ -43,12 +44,12 @@ const ItemsPerPage = ({ number, onchange }) => {
 
 ItemsPerPage.defaultProps = {
 	number: 30,
-	onchange: () => {}
+	onchangeItemsNumber: () => {}
 }
 
 ItemsPerPage.propTypes = {
 	number: PropTypes.number.isRequired,
-	onchange: PropTypes.func.isRequired,
+	onchangeItemsNumber: PropTypes.func.isRequired,
 }
 
 export default ItemsPerPage

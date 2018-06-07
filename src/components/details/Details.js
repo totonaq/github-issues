@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { API_URL } from './../../config';
-import { handleResponse } from './../../helpers';
 import Loading from './../loading/Loading';
-import NotFound from './../notFound/NotFound';
 import Comment from './../comment/Comment';
 import exclamation from './exclamation-white.svg';
 import 'github-syntax-light/lib/github-light.css';
@@ -12,100 +9,55 @@ import PropTypes from 'prop-types';
 
 class Details extends Component {
 
-	constructor() {
-		super();
-
-		this.state = {
-			issue: {user : ''},
-			showLoadingIcon: false,
-			isNotFound: false,
-			comments: []
-		};
-	}
-
-	componentDidMount() {
-		this.fetchIssue();
-	}
-
-	fetchIssue() {
-
-		this.setState({ showLoadingIcon: true });
-
+	componentWillMount() {
 		const { name, repo, number } = this.props.match.params;
-
-    fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}`, {
-    	headers: {
-        'Accept': 'application/vnd.github.v3.html+json',
-      }
-
-
-    })
-    .then(handleResponse)
-    .then((issue) => {
-
-     	if (number !== String(parseInt(number, 10))) throw new Error();
-
-      this.setState({
-      	issue,
-        showLoadingIcon: false,
-        isNotFound: false
-      });
-
-      if (issue.comments) {
-      	this.fetchComments(name, repo, number);
-      }
-     
-    })
-    .catch((error) => {
-     	console.log('request failed', error);
-      this.setState({
-        isNotFound: true,
-        showLoadingIcon: false
-      });
-    });
-
+		this.props.fetchSingleIssue(name, repo, number);
 	}
 
-	fetchComments(name, repo, number) {
-		fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}/comments`, {
-    	headers: {
-        'Accept': 'application/vnd.github.v3.html+json',
-      }
-    })
-    .then(handleResponse)
-    .then((comments) => {
+	componentWillReceiveProps(nextProps) {
+   
+    if (this.props.location.pathname !== nextProps.location.pathname || 
+    	this.props.location.search !== nextProps.location.search
+    	) {
 
-    	this.setState({ comments });
-     
-    })
-    .catch((error) => {
-     	console.log('request failed', error);
-      this.setState({
-        isNotFound: true,
-        showLoadingIcon: false
-      });
-    });
-	}
+    	const { name, repo, number } = nextProps.match.params;
+    	this.props.fetchSingleIssue(name, repo, number);
+
+    }
+  }
 
 	render() {
 
-		const { title, number, created_at, comments: commentsNumber, html_url: issueUrl } = this.state.issue;
-		const { login, html_url: authorUrl } = this.state.issue.user;
-		const { showLoadingIcon, isNotFound, comments } = this.state;
+		const { 
+			isLoading, 
+			comments, 
+			fetchOnMouseOver, 
+			onTooltipMouseOut, 
+			history, 
+			issue } = this.props;
 
-		if (showLoadingIcon) {
+		const { 
+			title, 
+			number, 
+			created_at, 
+			comments: commentsNumber, 
+			html_url: issueUrl, 
+			user } = issue;
+
+		const { login, html_url: authorUrl } = user;
+		
+
+		if (isLoading) {
 			return (
 				<div className='loading-wrap'>
 					<Loading />
 				</div>
 			)
-		} else if (isNotFound) {
-			return <NotFound />
 		} else {
 
 			return (
 				<div className='Details'>
-					<button className='back-button' onClick={() => this.props.history.goBack()}>Назад</button>
+					<button className='back-button' onClick={() => history.goBack()}>Назад</button>
 					<div className='Details-header'>
 						<h1 className='Details-header-heading'>{title}
 							<span className='Details-header-number'> #{number}</span>
@@ -124,8 +76,8 @@ class Details extends Component {
 								data-user={login}
 								href={authorUrl}
 								className='Details-descr-info-author'
-								onMouseOver={this.props.onmouseover}
-								onMouseOut={this.props.onmouseout}
+								onMouseOver={fetchOnMouseOver}
+								onMouseOut={onTooltipMouseOut}
 							>
 							{login}
 							</a>
@@ -140,9 +92,9 @@ class Details extends Component {
 
 					<div>
 						<Comment
-							data={this.state.issue}
-							onmouseover={this.props.onmouseover}
-							onmouseout={this.props.onmouseout}
+							data={issue}
+							onmouseover={fetchOnMouseOver}
+							onmouseout={onTooltipMouseOut}
 						/>
 					</div>
 					
@@ -152,8 +104,8 @@ class Details extends Component {
 								<Comment
 									key={comment.id}
 									data={comment}
-									onmouseover={this.props.onmouseover}
-									onmouseout={this.props.onmouseout}
+									onmouseover={fetchOnMouseOver}
+									onmouseout={onTooltipMouseOut}
 								/>
 							)
 						})
@@ -172,13 +124,19 @@ class Details extends Component {
 }
 
 Details.defaultProps = {
-	onmouseover: () => {},
-	onmouseout: () => {},
+	issue: { user: {} },
+	isLoading: false,
+	comments: [],
+	fetchOnMouseOver: () => {},
+	onTooltipMouseOut: () => {},
 }
 
 Details.propTypes = {
-	onmouseover: PropTypes.func.isRequired,
-	onmouseout: PropTypes.func.isRequired,
+	issue: PropTypes.object.isRequired,
+	isLoading: PropTypes.bool.isRequired,
+	comments: PropTypes.array.isRequired,
+	fetchOnMouseOver: PropTypes.func.isRequired,
+	onTooltipMouseOut: PropTypes.func.isRequired,
 	history: PropTypes.object.isRequired
 }
 

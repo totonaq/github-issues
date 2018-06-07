@@ -5,12 +5,7 @@ import './NotFound.css';
 
 class NotFound extends Component {
 
-	constructor() {
-		super();
-		this.onBackButtonEvent = this.onBackButtonEvent.bind(this);
-	}
-
-	onBackButtonEvent(e) {
+	onBackButtonEvent = e => {
     e.preventDefault();
     window.location.reload();
   }

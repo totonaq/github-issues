@@ -44,11 +44,12 @@
   width: auto;
 }
 
-.Pagination .Page.NextPage[disabled],
-.Pagination .Page.PrevPage[disabled] {
+.Pagination .Page.NextPage.disabled,
+.Pagination .Page.PrevPage.disabled {
+  background-color: #fafbfc;
   color: #d1d5da;
   cursor: default;
-  background-color: #fafbfc;
+  margin-left: 0;
 }
 
 .Pagination-count-of-pages {

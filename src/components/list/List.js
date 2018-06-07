@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ListItem from './../listItem/ListItem';
+import { ListItemBlock } from './../../containers/containers';
 import './List.css';
 import PropTypes from 'prop-types';
 
@@ -13,7 +13,7 @@ class List extends Component {
 
 		if (e.target.closest('li')) {
 
-			let siblings = [].slice.call(this.ul.children, 0);
+			const siblings = [].slice.call(this.ul.children, 0);
 
 			siblings.forEach(item => {
 				item.classList.remove('gray');
@@ -38,12 +38,9 @@ class List extends Component {
 
 					{this.props.listOfIssues.map(issue => {
 						return(
-							<ListItem
+							<ListItemBlock
 								key={issue.id}
 								data={issue}
-								onmouseover={this.props.onmouseover}
-								onmouseout={this.props.onmouseout}
-								
 							/>
 						)})
 					}

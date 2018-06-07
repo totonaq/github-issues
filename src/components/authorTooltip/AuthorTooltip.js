@@ -16,21 +16,30 @@ class AuthorTooltip extends Component {
 
 	render() {
 
-		const { login, name, html_url, avatar_url, location, bio, company } = this.props.data;
+		const { 
+			onTooltipMouseOver, 
+			onTooltipMouseOut, 
+			isTooltipBelow, 
+			top, 
+			bottom, 
+			left, 
+			data } = this.props;
 
-		const divStyle = this.props.isBelow ? 
+		const { login, name, html_url, avatar_url, location, bio, company } = data;
+
+		const divStyle = isTooltipBelow ? 
 			{
-				left: this.props.left,
-				top: this.props.top
+				left,
+				top
 			} : 
 			{
-				left: this.props.left,
-				bottom: this.props.bottom
+				left,
+				bottom
 			};
 
-		const tooltipPlacement = this.props.isBelow ? 'tooltip-below' : 'tooltip-above';
+		const tooltipPlacement = isTooltipBelow ? 'tooltip-below' : 'tooltip-above';
 		
-		let companies;
+		let companies = [];
 
 		if (company) {
 
@@ -63,7 +72,7 @@ class AuthorTooltip extends Component {
 						<a
 							href= {`https://github.com/${item.slice(1)}`}
 							className='AuthorTooltip-company-title__link'>
-							{` ${item.slice(1)}`}
+							{`${item.slice(1)}`}
 						</a>
 						<span>{separator}</span>
 					</span>
@@ -77,8 +86,8 @@ class AuthorTooltip extends Component {
 			<div
 				ref={this.getRef.bind(this)}
 				className={`AuthorTooltip ${tooltipPlacement}`}
-				onMouseOut={this.props.onmouseout}
-				onMouseOver={this.props.onmouseover}
+				onMouseOver={onTooltipMouseOver}
+				onMouseOut={onTooltipMouseOut}
 				style={divStyle}>
 				
 				<img width='60' height='60'
@@ -136,8 +145,6 @@ class AuthorTooltip extends Component {
 
 								Member of {companies}
 
-								
-								
 							</span>
 						</div>
 					}
@@ -147,30 +154,27 @@ class AuthorTooltip extends Component {
 }
 
 AuthorTooltip.defaultProps = {
-	setTooltipRelativePosition: () => {},
-
 	data: {},
 	left: '10px',
 	top: '10px',
 	bottom: '10px',
-	isBelow: false,
+	isTooltipBelow: false,
 
-	onmouseout: () => {},
-	onmouseover: () => {}
+	setTooltipRelativePosition: () => {},
+	onTooltipMouseOver: () => {},
+	onTooltipMouseOut: () => {}
 }
 
 AuthorTooltip.propTypes = {
-	setTooltipRelativePosition: PropTypes.func.isRequired,
-
 	data: PropTypes.object.isRequired,
-
 	left: PropTypes.string.isRequired,
 	top: PropTypes.string.isRequired,
 	bottom: PropTypes.string.isRequired,
-	isBelow: PropTypes.bool.isRequired,
+	isTooltipBelow: PropTypes.bool.isRequired,
 
-	onmouseout: PropTypes.func.isRequired,
-	onmouseover: PropTypes.func.isRequired,
+	setTooltipRelativePosition: PropTypes.func.isRequired,
+	onTooltipMouseOver: PropTypes.func.isRequired,
+	onTooltipMouseOut: PropTypes.func.isRequired,
 }
 
 export default AuthorTooltip

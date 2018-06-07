@@ -1,13 +1,9 @@
 import React, {Component} from 'react';
 import './Autocomplete.css';
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 
 class Autocomplete extends Component {
-
-	constructor(props) {
-		super(props);
-		this.hideAutocomplete = this.hideAutocomplete.bind(this);
-	}
 
 	componentDidMount() {
 		document.addEventListener('click', this.hideAutocomplete);
@@ -17,15 +13,16 @@ class Autocomplete extends Component {
 		document.removeEventListener('click', this.hideAutocomplete);
 	}
 
-	hideAutocomplete(e) {
+	hideAutocomplete = (e) => {
 		if (e.target.className !== 'InputField') {
-			this.props.hideAutocomplete();
+			this.props.setAutocompleteVisibility(false);
 		}
 	}
 
 	render() {
 
-		const { activeHint, repos, chooseRepo } = this.props;
+		const { activeHint, itemsPerPage, repos } = this.props;
+		
 
 		return (
 			<div className='Autocomplete'>
@@ -33,15 +30,16 @@ class Autocomplete extends Component {
 					{
 						repos.map((repo, index) => {
 							return (
-								<li
+								<li 
 									key={repo.id}
-									data-index={index}
 									className={activeHint === index ?
-										'Autocomplete-list__item active' :
-										'Autocomplete-list__item'}
-									onClick={e => chooseRepo(e.target.dataset.index)}
-									>
-									{repo.full_name}
+											'Autocomplete-list__item active' :
+											'Autocomplete-list__item'}>
+									<Link
+										to={`/repos/${repo.full_name}/issues?page=1&per_page=${itemsPerPage}`}
+										>
+										{repo.full_name}
+									</Link>
 								</li>
 							)
 						})
@@ -54,17 +52,16 @@ class Autocomplete extends Component {
 
 Autocomplete.defaultProps = {
 	activeHint: -1,
-	repos: [],
 	itemsPerPage: 30,
-	chooseRepo: () => {},
-	hideAutocomplete: () => {}
+	repos: [],
+	setAutocompleteVisibility: () => {}
 }
 
 Autocomplete.propTypes = {
 	activeHint: PropTypes.number.isRequired,
+	itemsPerPage: PropTypes.number.isRequired,
 	repos: PropTypes.array.isRequired,
-	chooseRepo: PropTypes.func.isRequired,
-	hideAutocomplete: PropTypes.func.isRequired
+	setAutocompleteVisibility: PropTypes.func.isRequired
 }
 
 export default Autocomplete;
