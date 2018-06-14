@@ -14,7 +14,7 @@ const initialState = {
 		activeHint: -1,
 		listOfRepos: []
 	},
-	issues: {
+	fetchIssues: {
 		listOfIssues: [],
 		issue: {user: {}},
 	}
@@ -24,13 +24,12 @@ const middleware = [ thunk ];
 const store = createStore(
 	IssuesApp,
 	initialState,
-	applyMiddleware(...middleware))
+	applyMiddleware(...middleware)
+)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Issues />
+	  <Issues />
   </Provider>,
   document.getElementById('root')
 )
-
-

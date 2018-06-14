@@ -1,10 +1,56 @@
 import { handleResponse, filterRepos } from './../helpers';
 import { API_URL } from './../config';
 
+
 /*
  * SEARCH FIELDS ACTIONS
  *
  */
+
+
+const requestRepos = () => ({
+	type: 'REQUEST_REPOS'
+})
+
+const receiveRepos = listOfRepos => ({
+	type: 'RECEIVE_REPOS',
+	listOfRepos
+})
+
+
+let time;
+
+const fetchRepos = username => dispatch => {
+	dispatch(requestRepos());
+
+	if (!username) {
+		return;
+	}
+
+	// no fetching issues unless 500ms have passed
+	// since the last symbol of the repo input was typed
+	clearTimeout(time);
+	time = setTimeout(() => fetchData(), 500);
+
+	const fetchData = () => {
+
+		fetch(`${API_URL}/users/${username}/repos`)
+		  .then(handleResponse)
+		  .then(
+		  	response => {
+		  		
+			    if (response.length > 0) {
+			      dispatch(receiveRepos(response));
+			    }
+
+		  	},
+		  	error => {
+		  		console.log('request failed', error);
+		  	}
+		  )
+
+	}
+}
 
 export const onValueChange = e => (dispatch, getState) => {
 
@@ -12,7 +58,7 @@ export const onValueChange = e => (dispatch, getState) => {
 	
 	const value = e.target.value;
 	
-	const { listOfRepos } = getState().autocomplete;
+	const { listOfRepos } = getState().fetchRepos;
 
 	if (e.target.name === 'username') {
 
@@ -20,7 +66,7 @@ export const onValueChange = e => (dispatch, getState) => {
 		dispatch(setRepo(''))
 		dispatch(setAutocompleteVisibility(false));
 
-		dispatch(fetchData(value));
+		dispatch(fetchRepos(value));
 
 	} else if (e.target.name === 'repo') {
 
@@ -28,7 +74,7 @@ export const onValueChange = e => (dispatch, getState) => {
 		dispatch(setAutocompleteVisibility(true));
 
 		if (listOfRepos.length === 0) {
-			dispatch(fetchData(username));
+			dispatch(fetchRepos(username));
 		}
 	
 	}
@@ -49,53 +95,10 @@ const setItemsPerPage = itemsPerPage => ({
 	itemsPerPage
 })
 
-let time;
-
-const fetchData = value => dispatch => {
-  
-	dispatch(setListOfRepos([]))
-
-	// no fetching issues unless 500ms have passed
-	// since the last symbol of the repo input was typed
-
-	clearTimeout(time);
-	
-  time = setTimeout(() => dispatch(getListOfRepos(value)), 500);
-
-}
-
-const getListOfRepos = username => dispatch => {
-	
-	if (!username) {
-		dispatch(setListOfRepos([]))
-		return;
-	}
-      
-  fetch(`${API_URL}/users/${username}/repos`)
-  .then(handleResponse)
-  .then(response => {
-  	
-    if (response.length > 0) {
-      dispatch(setListOfRepos(response));
-    }
-
-  })
-  .catch(error => {
-    dispatch(setListOfRepos([]))
-		
-  });
-
-}
-
 export const setAutocompleteVisibility = isAutoCompleteVisible => ({
 	type: 'SET_AUTOCOMPLETE_VISIBILITY',
 	activeHint: -1,
 	isAutoCompleteVisible
-})
-
-export const setListOfRepos = listOfRepos => ({
-	type: 'SET_LIST_OF_REPOS',
-	listOfRepos
 })
 
 export const onchangeItemsNumber = e => dispatch => {
@@ -104,7 +107,9 @@ export const onchangeItemsNumber = e => dispatch => {
 }
 
 export const onRepoInputKeydown = e => (dispatch, getState) => {
-	const { activeHint, listOfRepos } = getState().autocomplete;
+	const { listOfRepos } = getState().fetchRepos;
+	const { activeHint } = getState().autocomplete;
+
 	const { repo } = getState().values;
 
 	if (filterRepos(repo, listOfRepos).length > 0) {
@@ -160,34 +165,44 @@ export const setInputFocus = isInputFocused => dispatch => {
  *
  */
 
+const requestUserInfo = () => ({
+	type: 'REQUEST_USER_INFO',
+})
+
+const receiveUserInfo = userData => ({
+	type: 'RECEIVE_USER_INFO',
+	userData
+})
+
 let isMouseOver = false;
 
 export const fetchOnMouseOver = e => dispatch => {
 
+	dispatch(requestUserInfo())
+	dispatch(getTooltipPosition(e));
+
   isMouseOver = true;
 
-  dispatch(getTooltipPosition(e));
-  
   const target = e.target;
 
   fetch(`${API_URL}/users/${target.dataset.user}`)
   .then(handleResponse)
-  .then(response => {
+  .then(
+  	response => {
 
-  	dispatch(fetchUserData(response))
+  		dispatch(receiveUserInfo(response))
 
-  	if (isMouseOver) dispatch(onTooltipMouseOver());
+	  	if (isMouseOver) dispatch(onTooltipMouseOver());
 
-  	// this condition prevents showing a tooltip if
-		// data fetching has completed after a mouse had left
-		// the target element
- 
-   
-  })
-  .catch(error => {
-    console.log('request failed', error);
-  });
-  
+	  	// this condition prevents showing a tooltip if
+			// data fetching has completed after the mouse had left
+			// the target element
+	 
+	  },
+	  error => {
+	  	console.log('request failed', error);
+	  }
+  )
 }
 
 let yOffsetOfTooltipTarget = 0;
@@ -218,11 +233,6 @@ const getTooltipPosition = e => dispatch => {
 
 }
 
-export const fetchUserData = userData => ({
-	type: 'FETCH_TOOLTIP_USERDATA',
-	userData
-})
-
 let timeMouseOut = null;
 let timeMouseOver = null;
 
@@ -245,7 +255,6 @@ export const onTooltipMouseOut = () => dispatch => {
 
   timeMouseOut = setTimeout(() => {
 
-  	dispatch(fetchUserData({}))
   	dispatch(setTooltipVisibility(false))
   }, 50);
 
@@ -284,79 +293,65 @@ export const setRelativePosition = isTooltipBelow => ({
  *
  */
 
-export const getIssues = (name, repo, page, per_page) => dispatch => {
-
-	dispatch(checkParams(false))
-	dispatch(setUsername(name))
+export const refreshInputs = (username, repo, itemsPerPage) => dispatch => {
+	dispatch(setUsername(username))
 	dispatch(setRepo(repo))
-	dispatch(setItemsPerPage(per_page))
-	dispatch(showLoadingIcon(true))
-
-  fetch(`${API_URL}/repos/${name}/${repo}`)
-  .then(handleResponse)
-  .then(response => {
-
-    const numberOfIssues = response.open_issues_count;
-    const numberOfPages = Math.ceil(numberOfIssues / per_page);
-
-    dispatch(setNumberOfPages(numberOfPages))
-    dispatch(getList(name, repo, page, per_page));
-    
-  })
-  .catch(error => {
-
-  	dispatch(showLoadingIcon(false))
-  	dispatch(getListOfIssues([]))
-    dispatch(checkParams(true))
-		dispatch(setUsername(''))
-		dispatch(setRepo(''))
-
-    console.log('request failed', error);
-
-  });
+	dispatch(setItemsPerPage(itemsPerPage))
 }
 
-const setNumberOfPages = numberOfPages => ({
-	type: 'SET_NUMBER_OF_PAGES',
+const requestIssues = () => ({
+	type: 'REQUEST_ISSUES'
+})
+
+const receiveIssues = (listOfIssues, numberOfPages) => ({
+	type: 'RECEIVE_ISSUES',
+	listOfIssues,
 	numberOfPages
 })
 
-const getList = (name, repo, page, per_page) => dispatch => {
+const requestIssuesFailure = () => ({
+	type: 'REQUEST_ISSUES_FAILURE'
+})
+
+export const getIssues = (name, repo, page, per_page) => dispatch => {
+
+	dispatch(requestIssues());
+
+  fetch(`${API_URL}/repos/${name}/${repo}`)
+  .then(handleResponse)
+  .then(
+  	response => {
+
+	    const numberOfIssues = response.open_issues_count;
+	    const numberOfPages = Math.ceil(numberOfIssues / per_page);
+
+	    dispatch(getList(name, repo, page, per_page, numberOfPages));
+	    
+	  },
+	  error => {
+
+	  	dispatch(requestIssuesFailure());
+
+	    console.log('request failed', error);
+	  }
+  )
+}
+
+const getList = (name, repo, page, per_page, numberOfPages) => dispatch => {
 
   fetch(`${API_URL}/repos/${name}/${repo}/issues?page=${page}&per_page=${per_page}`)
   .then(handleResponse)
-  .then(response => {
-
-  	dispatch(getListOfIssues(response))
-  	dispatch(showLoadingIcon(false))
-
-  })
-  .catch(error => {
-
-  	dispatch(checkParams(true))
-  	dispatch(showLoadingIcon(false))
-  
-    console.log('request failed', error);
-
-  });
-
+  .then(
+  	response => {
+  		dispatch(receiveIssues(response, numberOfPages))
+	  },
+	  error => {
+	  	dispatch(requestIssuesFailure());
+	  
+	    console.log('request failed', error);
+	  }
+	)
 }
-
-export const checkParams = isParamWrong => ({
-	type: 'IS_PARAM_WRONG',
-	isParamWrong
-})
-
-const showLoadingIcon = isLoading => ({
-	type: 'SHOW_LOADING_ICON',
-	isLoading
-})
-
-const getListOfIssues = listOfIssues => ({
-	type: 'GET_LIST_OF_ISSUES',
-	listOfIssues
-})
-
 
 
 /*
@@ -364,9 +359,28 @@ const getListOfIssues = listOfIssues => ({
  *
  */
 
-export const fetchSingleIssue = (name, repo, number) => dispatch => {
+const requestSingleIssue = () => ({
+	type: 'REQUEST_SINGLE_ISSUE'
+})
 
-	dispatch(showLoadingIcon(true))
+const receiveSingleIssue = (issue, comments) => ({
+	type: 'RECEIVE_SINGLE_ISSUE',
+	issue,
+	comments
+})
+
+const requestSingleIssueFailure = () => ({
+	type: 'REQUEST_SINGLE_ISSUE_FAILURE'
+})
+
+
+export const fetchSingleIssue = (name, repo, number) => dispatch => {
+	dispatch(requestSingleIssue())
+
+	if (number !== String(parseInt(number, 10))) {
+		dispatch(requestSingleIssueFailure())
+		return
+	}
 
   fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}`, {
   	headers: {
@@ -375,61 +389,40 @@ export const fetchSingleIssue = (name, repo, number) => dispatch => {
 
   })
   .then(handleResponse)
-  .then((issue) => {
-  	
-   	if (number !== String(parseInt(number, 10))) throw new Error();
-
-   	dispatch(checkParams(false))
-   	dispatch(showLoadingIcon(false))
-   	dispatch(getSingleIssue(issue))
-
-    if (issue.comments) {
-    	dispatch(fetchComments(name, repo, number));
-    }
-   
-  })
-  .catch((error) => {
-   	console.log('request failed', error);
-   
-   	dispatch(checkParams(true))
-   	dispatch(showLoadingIcon(false))
-  
-  });
-
+  .then(
+  	response => {
+ 
+	    if (response.comments) {
+	    	dispatch(fetchComments(name, repo, number, response));
+	    } else {
+	    	dispatch(receiveSingleIssue(response, []))
+	    }
+	   
+	  },
+	  error => {
+	  	dispatch(requestSingleIssueFailure());
+	  	console.log('request failed', error);
+	  }
+	)
 }
 
-const fetchComments = (name, repo, number) => dispatch => {
+const fetchComments = (name, repo, number, issue) => dispatch => {
 	fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}/comments`, {
   	headers: {
       'Accept': 'application/vnd.github.v3.html+json',
     }
   })
   .then(handleResponse)
-  .then((comments) => {
-
-  	dispatch(getComments(comments))
- 
-  })
-  .catch((error) => {
-   	console.log('request failed', error);
-   
-   	dispatch(checkParams(true))
-   	dispatch(showLoadingIcon(false))
-   
-  });
+  .then(
+  	response => {
+  		dispatch(receiveSingleIssue(issue, response))
+	  },
+	  error => {
+	  	dispatch(requestSingleIssueFailure())
+	  	console.log('request failed', error);
+	  }
+	)
 }
-
-const getSingleIssue = issue => ({
-	type: 'GET_SINGLE_ISSUE',
-	issue
-})
-
-const getComments = comments => ({
-	type: 'GET_COMMENTS',
-	comments
-})
-
-
 
 export const getWindowWidth = () => ({
 	type: 'GET_WINDOW_WIDTH',

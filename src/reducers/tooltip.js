@@ -1,10 +1,5 @@
 const tooltip = (state = {}, action) => {
 	switch (action.type) {
-		case 'FETCH_TOOLTIP_USERDATA':
-			return {
-				...state,
-				userData: action.userData
-			}
 		case 'SET_TOOLTIP_VISIBILITY':
 			return {
 				...state,

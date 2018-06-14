@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 class Details extends Component {
 
-	componentWillMount() {
+	componentDidMount() {
 		const { name, repo, number } = this.props.match.params;
 		this.props.fetchSingleIssue(name, repo, number);
 	}
@@ -27,7 +27,7 @@ class Details extends Component {
   }
 
 	render() {
-
+		
 		const { 
 			isLoading, 
 			comments, 

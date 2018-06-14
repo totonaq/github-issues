@@ -10,16 +10,21 @@ import './Result.css';
 
 class Result extends Component {
 
-	componentWillMount() {
+	getParams(source) {
+		const { name, repo } = source.match.params;
 
-		const { name, repo} = this.props.match.params;
-
-		let { page, per_page } = parse(this.props.location.search.substr(1));
+		let { page, per_page } = parse(source.location.search.substr(1));
 
 		page = validatePageNumber(page);
 		per_page = validateItemsPerPage(per_page);
-
+		
 		this.props.getIssues(name, repo, page, per_page);
+	}
+
+	componentDidMount() {
+
+		this.getParams(this.props)
+
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -28,14 +33,8 @@ class Result extends Component {
     	this.props.location.search !== nextProps.location.search
     	) {
 
-    	const { name, repo} = nextProps.match.params;
+    	this.getParams(nextProps)
 
-    	let { page, per_page } = parse(nextProps.location.search.substr(1));
-
-    	page = validatePageNumber(page);
-			per_page = validateItemsPerPage(per_page);
-
-      this.props.getIssues(name, repo, page, per_page);
     }
   }
 

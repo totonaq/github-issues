@@ -15,11 +15,6 @@ const values = (state = {}, action) => {
 				...state,
 				itemsPerPage: action.itemsPerPage
 			}
-		case 'IS_PARAM_WRONG':
-			return {
-				...state,
-				isParamWrong: action.isParamWrong
-			}
 		case 'SET_INPUT_FOCUS':
 			return {
 				...state,

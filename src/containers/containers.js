@@ -12,6 +12,7 @@ import {
 	onTooltipMouseOver,
 	onTooltipMouseOut,
 	getIssues,
+	refreshInputs,
 	fetchSingleIssue,
 	getWindowWidth
 
@@ -37,14 +38,15 @@ import AuthorTooltip from './../components/authorTooltip/AuthorTooltip';
 import { withRouter } from 'react-router-dom';
 import { filterRepos } from './../helpers';
 
-export const SearchFieldBlock = connect(
+export const SearchFieldBlock = withRouter(connect(
 	state => ({
 		isInputFocused: state.values.isInputFocused,
 		isAutoCompleteVisible: state.autocomplete.isAutoCompleteVisible,
-		reposLength: filterRepos(state.values.repo, state.autocomplete.listOfRepos).length,
-	})
+		reposLength: filterRepos(state.values.repo, state.fetchRepos.listOfRepos).length,
+	}),
+	{ refreshInputs }
 	
-)(SearchField)
+)(SearchField))
 
 export const UserInputFieldBlock = connect(
 	state => ({
@@ -61,7 +63,7 @@ export const UserInputFieldBlock = connect(
 export const RepoInputFieldBlock = connect(
 	state => ({
 		value: state.values.repo,
-		reposLength: state.autocomplete.listOfRepos.length
+		reposLength: state.fetchRepos.listOfRepos.length
 	}),
 	{	
 		onValueChange,
@@ -82,13 +84,11 @@ export const ItemsPerPageBlock = connect(
 
 export const AutocompleteBlock = connect(
 	state => ({
-		repos: filterRepos(state.values.repo, state.autocomplete.listOfRepos),
+		repos: filterRepos(state.values.repo, state.fetchRepos.listOfRepos),
 		activeHint: state.autocomplete.activeHint,
 		itemsPerPage: state.values.itemsPerPage
 	}),
-	{ 
-		setAutocompleteVisibility,
-	}
+	{ setAutocompleteVisibility }
 )(Autocomplete)
 
 export const SearchButtonBlock = connect(
@@ -103,21 +103,21 @@ export const SearchButtonBlock = connect(
 
 export const ResultBlock = withRouter(connect(
 	state => ({
-		isLoading: state.issues.isLoading,
-		issuesLength: state.issues.listOfIssues.length
+		isLoading: state.fetchIssues.isLoading,
+		issuesLength: state.fetchIssues.listOfIssues.length
 	}),
 	{ getIssues }
 )(Result))
 
 export const ListBlock = connect(
 	state => ({
-		listOfIssues: state.issues.listOfIssues
+		listOfIssues: state.fetchIssues.listOfIssues
 	})
 )(List)
 
 export const ListItemBlock = connect(
 	state => ({
-		listOfIssues: state.issues.listOfIssues
+		listOfIssues: state.fetchIssues.listOfIssues
 	}),
 	{
 		fetchOnMouseOver,
@@ -130,7 +130,7 @@ export const ListItemBlock = connect(
 export const PaginationBlock = connect(
 	state => ({
 		windowWidth: state.responsive.windowWidth,
-		numberOfPages: state.issues.numberOfPages
+		numberOfPages: state.fetchIssues.numberOfPages
 	}),
 	{ getWindowWidth }
 )(Pagination)
@@ -139,9 +139,9 @@ export const PaginationBlock = connect(
 
 export const DetailsBlock = withRouter(connect(
 	state => ({
-		issue: state.issues.issue,
-		isLoading: state.issues.isLoading,
-		comments: state.issues.comments
+		issue: state.fetchIssues.issue,
+		isLoading: state.fetchIssues.isLoading,
+		comments: state.fetchIssues.comments
 	}),
 	{
 		fetchSingleIssue,
@@ -154,12 +154,11 @@ export const DetailsBlock = withRouter(connect(
 
 export const Tooltip = connect(
 	state => ({
-		data: state.tooltip.userData,
+		data: state.fetchUserData.userData,
 		left: state.tooltip.left,
 		bottom: state.tooltip.bottom,
 		top: state.tooltip.top,
 		isTooltipBelow: state.tooltip.isTooltipBelow
-
 	}),
 	{
 		setTooltipRelativePosition,
