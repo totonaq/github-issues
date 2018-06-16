@@ -11,9 +11,9 @@ import {
 	fetchOnMouseOver,
 	onTooltipMouseOver,
 	onTooltipMouseOut,
-	getIssues,
+	getIssuesIfNeeded,
 	refreshInputs,
-	fetchSingleIssue,
+	fetchSingleIssueIfNeeded,
 	getWindowWidth
 
 } from './../actions/'
@@ -102,22 +102,26 @@ export const SearchButtonBlock = connect(
 
 
 export const ResultBlock = withRouter(connect(
-	state => ({
-		isLoading: state.fetchIssues.isLoading,
-		issuesLength: state.fetchIssues.listOfIssues.length
-	}),
-	{ getIssues }
+	state => {
+		const {fetchIssuesByRepo, selectedIssue} = state;
+		const {isLoading, listOfIssues} = fetchIssuesByRepo[selectedIssue] || {isLoading: true, listOfIssues: []}
+		return {
+				isLoading,
+				issuesLength: listOfIssues.length
+			}
+	},
+	{ getIssuesIfNeeded }
 )(Result))
 
 export const ListBlock = connect(
 	state => ({
-		listOfIssues: state.fetchIssues.listOfIssues
+		listOfIssues: state.fetchIssuesByRepo[state.selectedIssue].listOfIssues
 	})
 )(List)
 
 export const ListItemBlock = connect(
 	state => ({
-		listOfIssues: state.fetchIssues.listOfIssues
+		listOfIssues: state.fetchIssuesByRepo[state.selectedIssue].listOfIssues
 	}),
 	{
 		fetchOnMouseOver,
@@ -130,7 +134,7 @@ export const ListItemBlock = connect(
 export const PaginationBlock = connect(
 	state => ({
 		windowWidth: state.responsive.windowWidth,
-		numberOfPages: state.fetchIssues.numberOfPages
+		numberOfPages: state.fetchIssuesByRepo[state.selectedIssue].numberOfPages
 	}),
 	{ getWindowWidth }
 )(Pagination)
@@ -138,13 +142,18 @@ export const PaginationBlock = connect(
 
 
 export const DetailsBlock = withRouter(connect(
-	state => ({
-		issue: state.fetchIssues.issue,
-		isLoading: state.fetchIssues.isLoading,
-		comments: state.fetchIssues.comments
-	}),
+	state => {
+		const {fetchSingleIssue, getSingleIssueId} = state;
+		const {isLoading, issue, comments} = fetchSingleIssue[getSingleIssueId] || {isLoading: true, issue: {user: {}}, comments: []}
+
+		return {
+			issue,
+			isLoading,
+			comments
+		}
+	},
 	{
-		fetchSingleIssue,
+		fetchSingleIssueIfNeeded,
 		fetchOnMouseOver,
 		onTooltipMouseOut
 	}

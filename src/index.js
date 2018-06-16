@@ -13,10 +13,6 @@ const initialState = {
 	autocomplete: {
 		activeHint: -1,
 		listOfRepos: []
-	},
-	fetchIssues: {
-		listOfIssues: [],
-		issue: {user: {}},
 	}
 }
 

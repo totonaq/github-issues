@@ -5,7 +5,7 @@ import NotFound from './../notFound/NotFound';
 
 const mapStateToProps= (state) => {
 	return {
-		isParamWrong: state.fetchIssues.isParamWrong,
+		isParamWrong: state.isParamWrong,
 		isTooltipVisible: state.tooltip.isTooltipVisible
 	}
 }

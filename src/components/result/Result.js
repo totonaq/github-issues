@@ -18,7 +18,7 @@ class Result extends Component {
 		page = validatePageNumber(page);
 		per_page = validateItemsPerPage(per_page);
 		
-		this.props.getIssues(name, repo, page, per_page);
+		this.props.getIssuesIfNeeded(name, repo, page, per_page);
 	}
 
 	componentDidMount() {

@@ -17,8 +17,24 @@ const receiveRepos = listOfRepos => ({
 	listOfRepos
 })
 
+const setUsername = username => ({
+	type: 'SET_USERNAME',
+	username
+})
+
+const setRepo = repo => ({
+	type: 'SET_REPO',
+	repo
+})
+
+const setItemsPerPage = itemsPerPage => ({
+	type: 'SET_ITEMSPERPAGE',
+	itemsPerPage
+})
+
 
 let time;
+
 
 const fetchRepos = username => dispatch => {
 	dispatch(requestRepos());
@@ -38,7 +54,7 @@ const fetchRepos = username => dispatch => {
 		  .then(handleResponse)
 		  .then(
 		  	response => {
-		  		
+		  		console.log('fetching')
 			    if (response.length > 0) {
 			      dispatch(receiveRepos(response));
 			    }
@@ -79,21 +95,6 @@ export const onValueChange = e => (dispatch, getState) => {
 	
 	}
 }
-
-const setUsername = username => ({
-	type: 'SET_USERNAME',
-	username
-})
-
-const setRepo = repo => ({
-	type: 'SET_REPO',
-	repo
-})
-
-const setItemsPerPage = itemsPerPage => ({
-	type: 'SET_ITEMSPERPAGE',
-	itemsPerPage
-})
 
 export const setAutocompleteVisibility = isAutoCompleteVisible => ({
 	type: 'SET_AUTOCOMPLETE_VISIBILITY',
@@ -293,29 +294,67 @@ export const setRelativePosition = isTooltipBelow => ({
  *
  */
 
+const isParamWrong = isParamWrong => ({
+	type: 'IS_PARAM_WRONG',
+	isParamWrong
+})
+
 export const refreshInputs = (username, repo, itemsPerPage) => dispatch => {
 	dispatch(setUsername(username))
 	dispatch(setRepo(repo))
 	dispatch(setItemsPerPage(itemsPerPage))
 }
 
-const requestIssues = () => ({
-	type: 'REQUEST_ISSUES'
+const selectIssue = selectedIssue => ({
+	type: 'SELECT_ISSUE',
+	selectedIssue
 })
 
-const receiveIssues = (listOfIssues, numberOfPages) => ({
+const requestIssues = selectedIssue => ({
+	type: 'REQUEST_ISSUES',
+	selectedIssue
+})
+
+const receiveIssues = (listOfIssues, numberOfPages, selectedIssue) => ({
 	type: 'RECEIVE_ISSUES',
+	selectedIssue,
 	listOfIssues,
 	numberOfPages
 })
 
-const requestIssuesFailure = () => ({
-	type: 'REQUEST_ISSUES_FAILURE'
+const requestIssuesFailure = selectedIssue => ({
+	type: 'REQUEST_ISSUES_FAILURE',
+	selectedIssue
 })
 
-export const getIssues = (name, repo, page, per_page) => dispatch => {
 
-	dispatch(requestIssues());
+const shouldFetchIssues = (state, selectedIssue) => {
+	const issues = state.fetchIssuesByRepo[selectedIssue];
+	
+	if (!issues) {
+		return true
+	} else if (state.isLoading) {
+		return false
+	}
+}
+
+export const getIssuesIfNeeded = (name, repo, page, per_page) => (dispatch, getState) => {
+	const selectedIssue = name + repo + page + per_page;
+	
+	dispatch(selectIssue(selectedIssue))
+	
+		if (shouldFetchIssues(getState(), selectedIssue)) {
+			
+			dispatch(getIssues(name, repo, page, per_page, selectedIssue))
+		}
+	
+}
+
+
+const getIssues = (name, repo, page, per_page, selectedIssue) => dispatch => {
+
+	dispatch(requestIssues(selectedIssue));
+	dispatch(isParamWrong(false))
 
   fetch(`${API_URL}/repos/${name}/${repo}`)
   .then(handleResponse)
@@ -325,29 +364,29 @@ export const getIssues = (name, repo, page, per_page) => dispatch => {
 	    const numberOfIssues = response.open_issues_count;
 	    const numberOfPages = Math.ceil(numberOfIssues / per_page);
 
-	    dispatch(getList(name, repo, page, per_page, numberOfPages));
+	    dispatch(getList(name, repo, page, per_page, numberOfPages, selectedIssue));
 	    
 	  },
 	  error => {
 
-	  	dispatch(requestIssuesFailure());
-
+	  	dispatch(requestIssuesFailure(selectedIssue));
+	  	dispatch(isParamWrong(true))
 	    console.log('request failed', error);
 	  }
   )
 }
 
-const getList = (name, repo, page, per_page, numberOfPages) => dispatch => {
+const getList = (name, repo, page, per_page, numberOfPages, selectedIssue) => dispatch => {
 
   fetch(`${API_URL}/repos/${name}/${repo}/issues?page=${page}&per_page=${per_page}`)
   .then(handleResponse)
   .then(
   	response => {
-  		dispatch(receiveIssues(response, numberOfPages))
+  		dispatch(receiveIssues(response, numberOfPages, selectedIssue))
 	  },
 	  error => {
-	  	dispatch(requestIssuesFailure());
-	  
+	  	dispatch(requestIssuesFailure(selectedIssue));
+	  	dispatch(isParamWrong(true))
 	    console.log('request failed', error);
 	  }
 	)
@@ -359,27 +398,59 @@ const getList = (name, repo, page, per_page, numberOfPages) => dispatch => {
  *
  */
 
-const requestSingleIssue = () => ({
-	type: 'REQUEST_SINGLE_ISSUE'
+const getSingleIssueId = singleIssueId => ({ // export ???
+	type: 'GET_SINGLE_ISSUE_ID',
+	singleIssueId
 })
 
-const receiveSingleIssue = (issue, comments) => ({
+const requestSingleIssue = singleIssueId => ({
+	type: 'REQUEST_SINGLE_ISSUE',
+	singleIssueId
+})
+
+const receiveSingleIssue = (issue, comments, singleIssueId) => ({
 	type: 'RECEIVE_SINGLE_ISSUE',
+	singleIssueId,
 	issue,
 	comments
 })
 
-const requestSingleIssueFailure = () => ({
-	type: 'REQUEST_SINGLE_ISSUE_FAILURE'
+const requestSingleIssueFailure = singleIssueId => ({
+	type: 'REQUEST_SINGLE_ISSUE_FAILURE',
+	singleIssueId
 })
 
+const shouldFetchSingleIssue = (state, singleIssue) => {
+	const issue = state.fetchSingleIssue[singleIssue];
+	if (!issue) {
 
-export const fetchSingleIssue = (name, repo, number) => dispatch => {
-	dispatch(requestSingleIssue())
+		return true
+	} else if (state.isLoading) {
+		return false
+	}
+}
 
+export const fetchSingleIssueIfNeeded = (name, repo, number) => (dispatch, getState) => {
+	const singleIssueId = name + repo + number;
+
+	dispatch(getSingleIssueId(singleIssueId))
+	console.log(getState())
+
+	if (shouldFetchSingleIssue(getState(), singleIssueId)) {
+
+		dispatch(fetchSingleIssue(name, repo, number, singleIssueId))
+	}
+}
+
+
+const fetchSingleIssue = (name, repo, number, singleIssueId) => dispatch => {
+	dispatch(requestSingleIssue(singleIssueId))
+	dispatch(isParamWrong(false))
 	if (number !== String(parseInt(number, 10))) {
-		dispatch(requestSingleIssueFailure())
+		
+		dispatch(isParamWrong(true))
 		return
+		
 	}
 
   fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}`, {
@@ -391,22 +462,24 @@ export const fetchSingleIssue = (name, repo, number) => dispatch => {
   .then(handleResponse)
   .then(
   	response => {
- 
+ 			
+ 			dispatch(isParamWrong(false))
 	    if (response.comments) {
-	    	dispatch(fetchComments(name, repo, number, response));
+	    	dispatch(fetchComments(name, repo, number, response, singleIssueId));
 	    } else {
-	    	dispatch(receiveSingleIssue(response, []))
+	    	dispatch(receiveSingleIssue(response, [], singleIssueId))
 	    }
 	   
 	  },
 	  error => {
-	  	dispatch(requestSingleIssueFailure());
+	  	dispatch(requestSingleIssueFailure(singleIssueId));
+	  	dispatch(isParamWrong(true))
 	  	console.log('request failed', error);
 	  }
 	)
 }
 
-const fetchComments = (name, repo, number, issue) => dispatch => {
+const fetchComments = (name, repo, number, issue, singleIssueId) => dispatch => {
 	fetch(`${API_URL}/repos/${name}/${repo}/issues/${number}/comments`, {
   	headers: {
       'Accept': 'application/vnd.github.v3.html+json',
@@ -415,10 +488,12 @@ const fetchComments = (name, repo, number, issue) => dispatch => {
   .then(handleResponse)
   .then(
   	response => {
-  		dispatch(receiveSingleIssue(issue, response))
+  	
+  		dispatch(receiveSingleIssue(issue, response, singleIssueId))
 	  },
 	  error => {
-	  	dispatch(requestSingleIssueFailure())
+	  	dispatch(requestSingleIssueFailure(singleIssueId))
+	  	dispatch(isParamWrong(true))
 	  	console.log('request failed', error);
 	  }
 	)

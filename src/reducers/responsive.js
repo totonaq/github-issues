@@ -1,8 +1,7 @@
-const responsive = (state = {}, action) => {
+const responsive = (state = 0, action) => {
 	switch(action.type) {
 		case 'GET_WINDOW_WIDTH':
 			return {
-				...state,
 				windowWidth: action.windowWidth
 			}
 		default:

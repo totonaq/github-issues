@@ -11,7 +11,7 @@ class Details extends Component {
 
 	componentDidMount() {
 		const { name, repo, number } = this.props.match.params;
-		this.props.fetchSingleIssue(name, repo, number);
+		this.props.fetchSingleIssueIfNeeded(name, repo, number);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -21,7 +21,7 @@ class Details extends Component {
     	) {
 
     	const { name, repo, number } = nextProps.match.params;
-    	this.props.fetchSingleIssue(name, repo, number);
+    	this.props.fetchSingleIssueIfNeeded(name, repo, number);
 
     }
   }
@@ -44,7 +44,7 @@ class Details extends Component {
 			html_url: issueUrl, 
 			user } = issue;
 
-		const { login, html_url: authorUrl } = user;
+		const { login, html_url: authorUrl } = user || {login: '', html_url: ''};
 		
 
 		if (isLoading) {

@@ -1,23 +1,17 @@
-const fetchIssues = (state = {
-	listOfIssues: [],
-	issue: { 
-		user: {}
-	},
-	comments: []
-}, action) => {
+const fetchIssues = (state = {}, action) => {
 	switch (action.type) {
 		case 'REQUEST_ISSUES':
 			return {
 				...state,
 				listOfIssues: [],
-				isLoading: true,
-				isParamWrong: false
+				isLoading: true
+				
 			}
 		case 'RECEIVE_ISSUES':
 			return {
 				...state,
 				isLoading: false,
-				isParamWrong: false,
+				
 				listOfIssues: action.listOfIssues,
 				numberOfPages: action.numberOfPages
 			}
@@ -25,22 +19,20 @@ const fetchIssues = (state = {
 			return {
 				...state,
 				isLoading: false,
-				isParamWrong: true,
+			
 				listOfIssues: [],
 			}
 		case 'REQUEST_SINGLE_ISSUE':
 			return {
 				...state,
 				isLoading: true,
-				isParamWrong: false,
-				//issue: {},
-				//comments: []
+			
 			}
 		case 'RECEIVE_SINGLE_ISSUE':
 			return {
 				...state,
 				isLoading: false,
-				isParamWrong: false,
+			
 				issue: action.issue,
 				comments: action.comments
 			}
@@ -48,7 +40,7 @@ const fetchIssues = (state = {
 			return {
 				...state,
 				isLoading: false,
-				isParamWrong: true,
+				
 				issue: {},
 				comments: []
 			}
@@ -57,4 +49,48 @@ const fetchIssues = (state = {
 	}
 }
 
-export default fetchIssues;
+export const selectedIssue = (state = '', action) => {
+  switch (action.type) {
+    case 'SELECT_ISSUE':
+      return action.selectedIssue
+    default:
+      return state
+  }
+}
+
+export const getSingleIssueId = (state = '', action) => {
+	switch (action.type) {
+    case 'GET_SINGLE_ISSUE_ID':
+      return action.singleIssueId
+    default:
+      return state
+  }
+}
+
+export const fetchIssuesByRepo = (state = {}, action) => {
+	switch (action.type) {
+		case 'REQUEST_ISSUES':
+		case 'RECEIVE_ISSUES':
+		case 'REQUEST_ISSUES_FAILURE':
+			return {
+				...state,
+				[action.selectedIssue]: fetchIssues(state[action.selectedIssue], action)
+			}
+		default:
+			return state
+	}
+}
+
+export const fetchSingleIssue = (state = {}, action) => {
+	switch (action.type) {
+		case 'REQUEST_SINGLE_ISSUE':
+		case 'RECEIVE_SINGLE_ISSUE':
+		case 'REQUEST_SINGLE_ISSUE_FAILURE':
+			return {
+				...state,
+				[action.singleIssueId]: fetchIssues(state[action.singleIssueId], action)
+			}
+		default:
+			return state
+	}
+}

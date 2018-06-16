@@ -1,14 +1,25 @@
 import { combineReducers } from 'redux';
 import values from './values';
+import isParamWrong from './isParamWrong';
 import tooltip from './tooltip';
 import autocomplete from './autocomplete';
 import responsive from './responsive';
 import fetchRepos from './fetchRepos';
 import fetchUserData from './fetchUserData';
-import fetchIssues from './fetchIssues';
+import {fetchIssuesByRepo, selectedIssue, fetchSingleIssue, getSingleIssueId} from './fetchIssues';
 
 const IssuesApp = combineReducers({
-  values, tooltip, autocomplete, responsive, fetchRepos, fetchUserData, fetchIssues
+  values,
+  isParamWrong,
+  tooltip,
+  autocomplete,
+  responsive,
+  fetchRepos,
+  fetchUserData,
+  fetchIssuesByRepo,
+  selectedIssue,
+  fetchSingleIssue,
+  getSingleIssueId
 })
 
 export default IssuesApp

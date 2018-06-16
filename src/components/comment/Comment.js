@@ -8,11 +8,11 @@ const Comment = (props) => {
 	const { 
 		body_html, 
 		created_at, 
-		user: { 
-			login, 
-			html_url, 
-			avatar_url } 
-		} = data;
+		user }  = data 
+
+	const {login, html_url, avatar_url} = user || {login: '', 
+			html_url: '', 
+			avatar_url: ''}; 
 
 	return (
 
