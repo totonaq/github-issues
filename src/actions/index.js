@@ -340,6 +340,9 @@ const shouldFetchIssues = (state, selectedIssue) => {
 
 export const getIssuesIfNeeded = (name, repo, page, per_page) => (dispatch, getState) => {
 	const selectedIssue = name + repo + page + per_page;
+
+	//in case of page reload
+	dispatch(refreshInputs(name, repo, per_page))
 	
 	dispatch(selectIssue(selectedIssue))
 	
@@ -354,10 +357,6 @@ export const getIssuesIfNeeded = (name, repo, page, per_page) => (dispatch, getS
 const getIssues = (name, repo, page, per_page, selectedIssue) => dispatch => {
 
 	dispatch(requestIssues(selectedIssue));
-
-	//in case of page reload
-	dispatch(refreshInputs(name, repo, per_page))
-
 
 	dispatch(isParamWrong(false))
 

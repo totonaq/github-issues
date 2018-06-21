@@ -14,7 +14,7 @@ class Autocomplete extends Component {
 	}
 
 	hideAutocomplete = (e) => {
-		if (e.target.className !== 'InputField') {
+		if (e.target.name !== 'repo') {
 			this.props.setAutocompleteVisibility(false);
 		}
 	}
@@ -37,6 +37,7 @@ class Autocomplete extends Component {
 											'Autocomplete-list__item'}>
 									<Link
 										to={`/repos/${repo.full_name}/issues?page=1&per_page=${itemsPerPage}`}
+										onClick={this.hideAutocomplete}
 										>
 										{repo.full_name}
 									</Link>
