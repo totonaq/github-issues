@@ -12,7 +12,6 @@ import {
 	onTooltipMouseOver,
 	onTooltipMouseOut,
 	getIssuesIfNeeded,
-	refreshInputs,
 	fetchSingleIssueIfNeeded,
 	getWindowWidth
 
@@ -43,8 +42,7 @@ export const SearchFieldBlock = withRouter(connect(
 		isInputFocused: state.values.isInputFocused,
 		isAutoCompleteVisible: state.autocomplete.isAutoCompleteVisible,
 		reposLength: filterRepos(state.values.repo, state.fetchRepos.listOfRepos).length,
-	}),
-	{ refreshInputs }
+	})
 	
 )(SearchField))
 
@@ -78,7 +76,7 @@ export const ItemsPerPageBlock = connect(
 	state => ({
 		number: state.values.itemsPerPage
 	}),
-	{onchangeItemsNumber}
+	{ onchangeItemsNumber }
 	
 )(ItemsPerPage)
 
@@ -134,7 +132,7 @@ export const ListItemBlock = connect(
 export const PaginationBlock = connect(
 	state => ({
 		windowWidth: state.responsive.windowWidth,
-		numberOfPages: state.fetchIssuesByRepo[state.selectedIssue].numberOfPages
+		numberOfPages: state.fetchIssuesByRepo[state.selectedIssue].numberOfPages || 0
 	}),
 	{ getWindowWidth }
 )(Pagination)
@@ -144,7 +142,12 @@ export const PaginationBlock = connect(
 export const DetailsBlock = withRouter(connect(
 	state => {
 		const {fetchSingleIssue, getSingleIssueId} = state;
-		const {isLoading, issue, comments} = fetchSingleIssue[getSingleIssueId] || {isLoading: true, issue: {user: {}}, comments: []}
+		const {
+			isLoading,
+			issue,
+			comments
+		} = fetchSingleIssue[getSingleIssueId] || 
+		{isLoading: true, issue: {user: {}}, comments: []}
 
 		return {
 			issue,

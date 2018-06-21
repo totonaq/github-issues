@@ -54,7 +54,7 @@ const fetchRepos = username => dispatch => {
 		  .then(handleResponse)
 		  .then(
 		  	response => {
-		  		console.log('fetching')
+		  		
 			    if (response.length > 0) {
 			      dispatch(receiveRepos(response));
 			    }
@@ -299,7 +299,7 @@ const isParamWrong = isParamWrong => ({
 	isParamWrong
 })
 
-export const refreshInputs = (username, repo, itemsPerPage) => dispatch => {
+const refreshInputs = (username, repo, itemsPerPage) => dispatch => {
 	dispatch(setUsername(username))
 	dispatch(setRepo(repo))
 	dispatch(setItemsPerPage(itemsPerPage))
@@ -354,6 +354,11 @@ export const getIssuesIfNeeded = (name, repo, page, per_page) => (dispatch, getS
 const getIssues = (name, repo, page, per_page, selectedIssue) => dispatch => {
 
 	dispatch(requestIssues(selectedIssue));
+
+	//in case of page reload
+	dispatch(refreshInputs(name, repo, per_page))
+
+
 	dispatch(isParamWrong(false))
 
   fetch(`${API_URL}/repos/${name}/${repo}`)
@@ -383,6 +388,7 @@ const getList = (name, repo, page, per_page, numberOfPages, selectedIssue) => di
   .then(
   	response => {
   		dispatch(receiveIssues(response, numberOfPages, selectedIssue))
+
 	  },
 	  error => {
 	  	dispatch(requestIssuesFailure(selectedIssue));
@@ -434,7 +440,6 @@ export const fetchSingleIssueIfNeeded = (name, repo, number) => (dispatch, getSt
 	const singleIssueId = name + repo + number;
 
 	dispatch(getSingleIssueId(singleIssueId))
-	console.log(getState())
 
 	if (shouldFetchSingleIssue(getState(), singleIssueId)) {
 

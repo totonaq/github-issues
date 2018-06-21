@@ -50,13 +50,6 @@ class Autocomplete extends Component {
 	}
 }
 
-Autocomplete.defaultProps = {
-	activeHint: -1,
-	itemsPerPage: 30,
-	repos: [],
-	setAutocompleteVisibility: () => {}
-}
-
 Autocomplete.propTypes = {
 	activeHint: PropTypes.number.isRequired,
 	itemsPerPage: PropTypes.number.isRequired,

@@ -1,4 +1,10 @@
-const autocomplete = (state = {}, action) => {
+const initialState = {
+	activeHint: -1,
+	listOfRepos: [],
+	isAutoCompleteVisible: false
+}
+
+const autocomplete = (state = initialState, action) => {
 	switch (action.type) {
 		case 'SET_AUTOCOMPLETE_VISIBILITY':
 			return {

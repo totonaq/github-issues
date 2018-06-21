@@ -73,17 +73,11 @@ class Result extends Component {
 	
 }
 
-Result.defaultProps = {
-  issuesLength: 0,
-  isLoading: false,
-  getIssues: () => {}
-}
-
 Result.propTypes = {
   location: PropTypes.object.isRequired,
 	issuesLength: PropTypes.number.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  getIssues: PropTypes.func.isRequired
+  getIssuesIfNeeded: PropTypes.func.isRequired
 }
 
 export default Result

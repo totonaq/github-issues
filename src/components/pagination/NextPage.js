@@ -31,10 +31,6 @@ const NextPage = ({ match, history, location, numberOfPages }) => {
 	}
 }
 
-NextPage.defaultProps = {
-	numberOfPages: 1
-}
-
 NextPage.propTypes = {
 	history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,

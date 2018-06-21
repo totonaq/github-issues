@@ -30,12 +30,6 @@ const SearchButton = ({ username, repo, itemsPerPage, history }) => {
 	
 }
 
-SearchButton.defaultProps = {
-	username: '',
-	repo: '',
-	itemsPerPage: 30
-}
-
 SearchButton.propTypes = {
 	username: PropTypes.string.isRequired,
 	repo: PropTypes.string.isRequired,

@@ -42,11 +42,6 @@ const ItemsPerPage = ({ number, onchangeItemsNumber }) => {
 	)
 }
 
-ItemsPerPage.defaultProps = {
-	number: 30,
-	onchangeItemsNumber: () => {}
-}
-
 ItemsPerPage.propTypes = {
 	number: PropTypes.number.isRequired,
 	onchangeItemsNumber: PropTypes.func.isRequired,

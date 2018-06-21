@@ -51,15 +51,7 @@ class List extends Component {
 	}
 }
 
-List.defaultProps = {
-	onmouseover: () => {},
-	onmouseout: () => {},
-	listOfIssues: []
-}
-
 List.propTypes = {
-	onmouseover: PropTypes.func.isRequired,
-	onmouseout: PropTypes.func.isRequired,
 	listOfIssues: PropTypes.array.isRequired
 }
 

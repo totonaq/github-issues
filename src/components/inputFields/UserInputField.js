@@ -35,13 +35,6 @@ const UserInputField = (props) => {
 	)
 }
 
-UserInputField.defaultProps = {
-	value: '',
-	onValueChange: () => {},
-	setInputFocus: () => {},
-	setAutocompleteVisibility: () => {},
-}
-
 UserInputField.propTypes = {
 	value: PropTypes.string.isRequired,
 	onValueChange: PropTypes.func.isRequired,

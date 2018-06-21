@@ -72,13 +72,6 @@ class Pagination extends Component {
 	}
 }
 
-Pagination.defaultProps = {
-	currentPage: 1,
-	numberOfPages: 1,
-	windowWidth: 0,
-	getWindowWidth: () => {}
-}
-
 Pagination.propTypes = {
 	currentPage: PropTypes.number.isRequired,
 	numberOfPages: PropTypes.number.isRequired,

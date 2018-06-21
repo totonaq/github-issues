@@ -29,15 +29,6 @@ const RepoInputField = (props) => {
 	)
 }
 
-RepoInputField.defaultProps = {
-	value: '',
-	reposLength: 0,
-	onValueChange: () => {},
-	onRepoInputKeydown: () => {},
-	setInputFocus: () => {},
-	setAutocompleteVisibility: () => {}
-}
-
 RepoInputField.propTypes = {
 	value: PropTypes.string.isRequired,
 	reposLength: PropTypes.number.isRequired,

@@ -153,18 +153,6 @@ class AuthorTooltip extends Component {
 	}
 }
 
-AuthorTooltip.defaultProps = {
-	data: {},
-	left: '10px',
-	top: '10px',
-	bottom: '10px',
-	isTooltipBelow: false,
-
-	setTooltipRelativePosition: () => {},
-	onTooltipMouseOver: () => {},
-	onTooltipMouseOut: () => {}
-}
-
 AuthorTooltip.propTypes = {
 	data: PropTypes.object.isRequired,
 	left: PropTypes.string.isRequired,

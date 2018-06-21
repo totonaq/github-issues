@@ -1,4 +1,11 @@
-const values = (state = {}, action) => {
+const initialState = {
+	username: '',
+	repo: '',
+	itemsPerPage: 30,
+	isInputFocused: false
+}
+
+const values = (state = initialState, action) => {
 	switch (action.type) {
 		case 'SET_USERNAME':
 			return {

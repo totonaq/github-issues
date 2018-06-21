@@ -42,7 +42,7 @@ class Details extends Component {
 			created_at, 
 			comments: commentsNumber, 
 			html_url: issueUrl, 
-			user } = issue;
+			user } = issue || {};
 
 		const { login, html_url: authorUrl } = user || {login: '', html_url: ''};
 		
@@ -124,17 +124,13 @@ class Details extends Component {
 }
 
 Details.defaultProps = {
-	issue: { user: {} },
-	isLoading: false,
-	comments: [],
-	fetchOnMouseOver: () => {},
-	onTooltipMouseOut: () => {},
+	comments: []
 }
 
 Details.propTypes = {
 	issue: PropTypes.object.isRequired,
 	isLoading: PropTypes.bool.isRequired,
-	comments: PropTypes.array.isRequired,
+	comments: PropTypes.array,
 	fetchOnMouseOver: PropTypes.func.isRequired,
 	onTooltipMouseOut: PropTypes.func.isRequired,
 	history: PropTypes.object.isRequired

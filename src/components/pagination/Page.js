@@ -21,10 +21,6 @@ const Page = ({ value, match, history, location }) => {
 	)
 }
 
-Page.defaultProps = {
-	value: 1
-}
-
 Page.propTypes = {
 	value: PropTypes.number.isRequired,
 	history: PropTypes.object.isRequired,

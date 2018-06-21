@@ -1,17 +1,19 @@
-const fetchIssues = (state = {}, action) => {
+const initialState = {
+	issue: {}
+}
+
+const fetchIssues = (state = initialState, action) => {
 	switch (action.type) {
 		case 'REQUEST_ISSUES':
 			return {
 				...state,
 				listOfIssues: [],
 				isLoading: true
-				
 			}
 		case 'RECEIVE_ISSUES':
 			return {
 				...state,
 				isLoading: false,
-				
 				listOfIssues: action.listOfIssues,
 				numberOfPages: action.numberOfPages
 			}
@@ -19,20 +21,17 @@ const fetchIssues = (state = {}, action) => {
 			return {
 				...state,
 				isLoading: false,
-			
-				listOfIssues: [],
+				listOfIssues: []
 			}
 		case 'REQUEST_SINGLE_ISSUE':
 			return {
 				...state,
-				isLoading: true,
-			
+				isLoading: true
 			}
 		case 'RECEIVE_SINGLE_ISSUE':
 			return {
 				...state,
 				isLoading: false,
-			
 				issue: action.issue,
 				comments: action.comments
 			}
@@ -40,7 +39,6 @@ const fetchIssues = (state = {}, action) => {
 			return {
 				...state,
 				isLoading: false,
-				
 				issue: {},
 				comments: []
 			}

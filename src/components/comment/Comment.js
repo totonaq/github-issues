@@ -73,18 +73,6 @@ const Comment = (props) => {
 	)
 }
 
-Comment.defaultProps = {
-	data: {
-		user: {
-			html_url: '',
-			login: '',
-			avatar_url: ''
-		}
-	},
-	onmouseover: () => {},
-	onmouseout: () => {}
-}
-
 Comment.propTypes = {
 	data: PropTypes.object.isRequired,
 	onmouseover: PropTypes.func.isRequired,

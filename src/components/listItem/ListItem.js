@@ -58,12 +58,6 @@ const ListItem = (props) => {
 	
 }
 
-ListItem.defaultProps = {
-	data: { user: ''},
-	fetchOnMouseOver: () => {},
-	onTooltipMouseOut: () => {},
-}
-
 ListItem.propTypes = {
 	data: PropTypes.object.isRequired,
 	fetchOnMouseOver: PropTypes.func.isRequired,

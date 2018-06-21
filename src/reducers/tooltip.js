@@ -1,4 +1,8 @@
-const tooltip = (state = {}, action) => {
+const initialState = {
+	isTooltipBelow: false
+}
+
+const tooltip = (state = initialState, action) => {
 	switch (action.type) {
 		case 'SET_TOOLTIP_VISIBILITY':
 			return {
